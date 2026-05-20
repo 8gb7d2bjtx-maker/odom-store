@@ -1834,7 +1834,7 @@
                     const canAfford = balance >= gr.bucks;
                     const btnDisabled = myContributed || !canAfford;
                     html += `
-          <div class="group-item${allDone ? ' fully-funded' : ''}">
+          <div class="group-item${allDone ? ' fully-funded' : ''}${!myContributed && !canAfford ? ' cant-afford' : ''}" style="${!myContributed && !canAfford ? 'opacity:0.28' : ''}">
             <div class="group-item-top">
               <span class="group-item-emoji">${
                     gr.emoji}</span>
