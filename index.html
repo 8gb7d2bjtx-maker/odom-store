@@ -1288,13 +1288,13 @@
     import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyA8LUv-mznkOLO8qZV_9qk8E50E1h69jxQ",
-      authDomain: "odom-summer-store.firebaseapp.com",
-      databaseURL: "https://odom-summer-store-default-rtdb.firebaseio.com",
-      projectId: "odom-summer-store",
-      storageBucket: "odom-summer-store.firebasestorage.app",
-      messagingSenderId: "247588039797",
-      appId: "1:247588039797:web:ed491a7fc1ea1fdce8dc3c"
+        apiKey: "AIzaSyA8LUv-mznkOLO8qZV_9qk8E50E1h69jxQ",
+        authDomain: "odom-summer-store.firebaseapp.com",
+        databaseURL: "https://odom-summer-store-default-rtdb.firebaseio.com",
+        projectId: "odom-summer-store",
+        storageBucket: "odom-summer-store.firebasestorage.app",
+        messagingSenderId: "247588039797",
+        appId: "1:247588039797:web:ed491a7fc1ea1fdce8dc3c"
     };
 
     const firebaseApp = initializeApp(firebaseConfig);
@@ -1304,50 +1304,156 @@
     // EmailJS
     emailjs.init('Ymin2yYRCI1ottQxa');
     function sendNotification(kidName, rewardName, cost, isGroup) {
-      emailjs.send('service_7xk9f57', 'template_9j6gszi', {
-        kid_name: isGroup ? 'All Kids (Group Reward)' : kidName,
-        reward_name: rewardName,
-        cost: isGroup ? `${cost} Bucks each` : `${cost} Bucks`,
-        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-      }).catch(e => console.warn('EmailJS error:', e));
+        emailjs.send('service_7xk9f57', 'template_9j6gszi', {
+            kid_name: isGroup ? 'All Kids (Group Reward)' : kidName,
+            reward_name: rewardName,
+            cost: isGroup ? `${cost} Bucks each` : `${cost} Bucks`,
+            time: new Date().toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+            }),
+        }).catch(e => console.warn('EmailJS error:', e));
     }
 
     function todayStr() {
-      const d = new Date();
-      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
-    function nowStr() { return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
+    function nowStr() {
+        return new Date().toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
     function formatDate(str) {
-      const [y,m,d] = str.split('-');
-      return new Date(+y,+m-1,+d).toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'});
+        const [y, m, d] = str.split('-');
+        return new Date(+y, +m - 1, +d).toLocaleDateString([], {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric'
+        });
     }
 
     const DEFAULTS = {
-      dataVersion: 2,
-      kids: ['Kid 1','Kid 2','Kid 3'],
-      activities: [
-        {id:1, name:'Practice instrument', desc:'30 minutes', bucks:10, emoji:'🎵', repeatable:true,  kidVis:[true,true,true]},
-        {id:2, name:'Read a book',          desc:'30 minutes', bucks:8,  emoji:'📚', repeatable:false, kidVis:[true,true,true]},
-        {id:3, name:'Play outside',         desc:'1 hour',     bucks:8,  emoji:'🌳', repeatable:false, kidVis:[true,true,true]},
-        {id:4, name:'Help with chores',     desc:'One task',   bucks:5,  emoji:'🧹', repeatable:true,  kidVis:[true,true,true]},
-        {id:5, name:'Creative project',     desc:'Drawing, crafts, etc.', bucks:7, emoji:'🎨', repeatable:false, kidVis:[true,true,true]},
-        {id:6, name:'Exercise / sports',    desc:'30 minutes', bucks:8,  emoji:'⚽', repeatable:true,  kidVis:[true,true,true]},
-        {id:7, name:'Learn something new',  desc:'Educational video or activity', bucks:6, emoji:'🧠', repeatable:false, kidVis:[true,true,true]},
-      ],
-      rewards: [
-        {id:1, name:'30 min screen time', bucks:10, emoji:'📱'},
-        {id:2, name:'Choose dinner', bucks:15, emoji:'🍕'},
-        {id:3, name:'Skip a chore', bucks:20, emoji:'✨'},
-        {id:4, name:'Candy / snack', bucks:8, emoji:'🍭'},
-        {id:5, name:'Movie night pick', bucks:25, emoji:'🎬'},
-        {id:6, name:'Extra 30 min bedtime', bucks:30, emoji:'🌙'},
-        {id:7, name:'Friend sleepover', bucks:60, emoji:'🛌'},
-      ],
-      balances: [0,0,0],
-      completed: {date: todayStr(), counts: [{},{},{}]},
-      history: [],
-      groupRewards: [],
-      lastId: 100,
+        dataVersion: 2,
+        kids: ['Kid 1', 'Kid 2', 'Kid 3'],
+        activities: [
+        {
+            id: 1,
+            name: 'Practice instrument',
+            desc: '30 minutes',
+            bucks: 10,
+            emoji: '🎵',
+            repeatable: true,
+            kidVis: [true, true, true]
+        },
+        {
+            id: 2,
+            name: 'Read a book',
+            desc: '30 minutes',
+            bucks: 8,
+            emoji: '📚',
+            repeatable: false,
+            kidVis: [true, true, true]
+        },
+        {
+            id: 3,
+            name: 'Play outside',
+            desc: '1 hour',
+            bucks: 8,
+            emoji: '🌳',
+            repeatable: false,
+            kidVis: [true, true, true]
+        },
+        {
+            id: 4,
+            name: 'Help with chores',
+            desc: 'One task',
+            bucks: 5,
+            emoji: '🧹',
+            repeatable: true,
+            kidVis: [true, true, true]
+        },
+        {
+            id: 5,
+            name: 'Creative project',
+            desc: 'Drawing, crafts, etc.',
+            bucks: 7,
+            emoji: '🎨',
+            repeatable: false,
+            kidVis: [true, true, true]
+        },
+        {
+            id: 6,
+            name: 'Exercise / sports',
+            desc: '30 minutes',
+            bucks: 8,
+            emoji: '⚽',
+            repeatable: true,
+            kidVis: [true, true, true]
+        },
+        {
+            id: 7,
+            name: 'Learn something new',
+            desc: 'Educational video or activity',
+            bucks: 6,
+            emoji: '🧠',
+            repeatable: false,
+            kidVis: [true, true, true]
+        },
+        ],
+        rewards: [
+        {
+            id: 1,
+            name: '30 min screen time',
+            bucks: 10,
+            emoji: '📱'
+        },
+        {
+            id: 2,
+            name: 'Choose dinner',
+            bucks: 15,
+            emoji: '🍕'
+        },
+        {
+            id: 3,
+            name: 'Skip a chore',
+            bucks: 20,
+            emoji: '✨'
+        },
+        {
+            id: 4,
+            name: 'Candy / snack',
+            bucks: 8,
+            emoji: '🍭'
+        },
+        {
+            id: 5,
+            name: 'Movie night pick',
+            bucks: 25,
+            emoji: '🎬'
+        },
+        {
+            id: 6,
+            name: 'Extra 30 min bedtime',
+            bucks: 30,
+            emoji: '🌙'
+        },
+        {
+            id: 7,
+            name: 'Friend sleepover',
+            bucks: 60,
+            emoji: '🛌'
+        },
+        ],
+        balances: [0, 0, 0],
+        completed: {
+            date: todayStr(),
+            counts: [{}, {}, {}]
+        },
+        history: [],
+        groupRewards: [],
+        lastId: 100,
     };
 
     let S = JSON.parse(JSON.stringify(DEFAULTS));
@@ -1359,673 +1465,1040 @@
     let editingType = null;
 
     document.getElementById('app').innerHTML = `
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:14px;">
-        <div style="font-size:44px">☀️</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:#E8B84B;letter-spacing:3px">ODOM SUMMER STORE</div>
-        <div style="font-size:11px;color:#7C82A0;font-weight:700;text-transform:uppercase;letter-spacing:1.5px">Connecting...</div>
-      </div>`;
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:14px;">
+    <div style="font-size:44px">☀️</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:#E8B84B;letter-spacing:3px">ODOM SUMMER STORE</div>
+    <div style="font-size:11px;color:#7C82A0;font-weight:700;text-transform:uppercase;letter-spacing:1.5px">Connecting...</div>
+  </div>`
+
+
+
+
+    ;
 
     function load() {
-      onValue(dataRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          S = data;
-          if (!Array.isArray(S.balances)) S.balances = Object.values(S.balances || {0:0,1:0,2:0});
-          if (!Array.isArray(S.kids)) S.kids = Object.values(S.kids || DEFAULTS.kids);
-          if (!Array.isArray(S.activities)) S.activities = Object.values(S.activities || []);
-          S.activities.forEach(a => { if (!a.kidVis) a.kidVis = [true,true,true]; });
-          if (!Array.isArray(S.rewards)) S.rewards = Object.values(S.rewards || []);
-          if (!Array.isArray(S.history)) S.history = S.history ? Object.values(S.history) : [];
-          if (!S.groupRewards) S.groupRewards = [];
-          else if (!Array.isArray(S.groupRewards)) S.groupRewards = Object.values(S.groupRewards);
-          if (!S.completed || S.completed.date !== todayStr()) {
-            S.completed = {date: todayStr(), counts: [{},{},{}]};
-            save(); return;
-          }
-          if (!Array.isArray(S.completed.counts))
-            S.completed.counts = S.completed.counts ? Object.values(S.completed.counts) : [{},{},{}];
-        } else {
-          S = JSON.parse(JSON.stringify(DEFAULTS));
-          save(); return;
-        }
-        render();
-      });
+        onValue(dataRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                S = data;
+                if (!Array.isArray(S.balances))
+                    S.balances = Object.values(S.balances || {
+                        0: 0,
+                        1: 0,
+                        2: 0
+                    });
+                if (!Array.isArray(S.kids))
+                    S.kids = Object.values(S.kids || DEFAULTS.kids);
+                if (!Array.isArray(S.activities))
+                    S.activities = Object.values(S.activities || []);
+                S.activities.forEach(a => {
+                    if (!a.kidVis)
+                        a.kidVis = [true, true, true];
+                });
+                if (!Array.isArray(S.rewards))
+                    S.rewards = Object.values(S.rewards || []);
+                if (!Array.isArray(S.history))
+                    S.history = S.history ? Object.values(S.history) : [];
+                if (!S.groupRewards)
+                    S.groupRewards = [];
+                else if (!Array.isArray(S.groupRewards))
+                    S.groupRewards = Object.values(S.groupRewards);
+                if (!S.completed || S.completed.date !== todayStr()) {
+                    S.completed = {
+                        date: todayStr(),
+                        counts: [{}, {}, {}]
+                    };
+                    save();
+                    return;
+                }
+                if (!Array.isArray(S.completed.counts))
+                    S.completed.counts = S.completed.counts ? Object.values(S.completed.counts) : [{}, {}, {}];
+            } else {
+                S = JSON.parse(JSON.stringify(DEFAULTS));
+                save();
+                return;
+            }
+            render();
+        });
     }
 
-    function save() { set(dataRef, S).catch(e => console.error('Firebase save error:', e)); }
+    function save() {
+        set(dataRef, S).catch(e => console.error('Firebase save error:', e));
+    }
 
     function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg; t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 2200);
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2200);
     }
 
-    function getCount(kidIdx, actId) { const c = S.completed.counts[kidIdx]; return c ? (c[actId] || 0) : 0; }
+    function getCount(kidIdx, actId) {
+        const c = S.completed.counts[kidIdx];
+        return c ? (c[actId] || 0) : 0;
+    }
     function setCount(kidIdx, actId, val) {
-      if (!S.completed.counts[kidIdx]) S.completed.counts[kidIdx] = {};
-      S.completed.counts[kidIdx][actId] = Math.max(0, val);
+        if (!S.completed.counts[kidIdx])
+            S.completed.counts[kidIdx] = {};
+        S.completed.counts[kidIdx][actId] = Math.max(0, val);
     }
 
     function increment(actId) {
-      const act = S.activities.find(a => a.id === actId); if (!act) return;
-      const cur = getCount(currentKid, actId);
-      if (!act.repeatable && cur >= 1) return;
-      if (act.repeatable && cur >= 3) return;
-      setCount(currentKid, actId, cur + 1);
-      S.balances[currentKid] += act.bucks;
-      showToast(`+${act.bucks} Bucks Earned`);
-      save(); render();
+        const act = S.activities.find(a => a.id === actId);
+        if (!act)
+            return;
+        const cur = getCount(currentKid, actId);
+        if (!act.repeatable && cur >= 1)
+            return;
+        if (act.repeatable && cur >= 3)
+            return;
+        setCount(currentKid, actId, cur + 1);
+        S.balances[currentKid] += act.bucks;
+        showToast(`+${act.bucks} Bucks Earned`);
+        save();
+        render();
     }
 
     function decrement(actId) {
-      if (!adminMode) return;
-      const act = S.activities.find(a => a.id === actId); if (!act) return;
-      const cur = getCount(currentKid, actId); if (cur <= 0) return;
-      setCount(currentKid, actId, cur - 1);
-      S.balances[currentKid] = Math.max(0, S.balances[currentKid] - act.bucks);
-      save(); render();
+        if (!adminMode)
+            return;
+        const act = S.activities.find(a => a.id === actId);
+        if (!act)
+            return;
+        const cur = getCount(currentKid, actId);
+        if (cur <= 0)
+            return;
+        setCount(currentKid, actId, cur - 1);
+        S.balances[currentKid] = Math.max(0, S.balances[currentKid] - act.bucks);
+        save();
+        render();
     }
 
     function toggleCheck(actId) {
-      const act = S.activities.find(a => a.id === actId); if (!act) return;
-      const cur = getCount(currentKid, actId);
-      if (cur > 0) return; // locked — cannot uncheck once checked
-      setCount(currentKid, actId, 1);
-      S.balances[currentKid] += act.bucks;
-      showToast(`+${act.bucks} Bucks Earned`);
-      save(); render();
+        const act = S.activities.find(a => a.id === actId);
+        if (!act)
+            return;
+        const cur = getCount(currentKid, actId);
+        if (cur > 0)
+            return; // locked — cannot uncheck once checked
+        setCount(currentKid, actId, 1);
+        S.balances[currentKid] += act.bucks;
+        showToast(`+${act.bucks} Bucks Earned`);
+        save();
+        render();
     }
 
     function openShopConfirm(rew) {
-      if (S.balances[currentKid] < rew.bucks) return;
-      confirmReward = rew; renderModal();
+        if (S.balances[currentKid] < rew.bucks)
+            return;
+        confirmReward = rew;
+        renderModal();
     }
 
     function confirmBuy() {
-      if (!confirmReward) return;
-      S.balances[currentKid] -= confirmReward.bucks;
-      S.history.unshift({ date: todayStr(), time: nowStr(), kidIdx: currentKid, rewardName: confirmReward.name, rewardEmoji: confirmReward.emoji, cost: confirmReward.bucks });
-      showToast(`Redeemed: ${confirmReward.name}`);
-      sendNotification(S.kids[currentKid], confirmReward.name, confirmReward.bucks, false);
-      confirmReward = null; save(); render();
+        if (!confirmReward)
+            return;
+        S.balances[currentKid] -= confirmReward.bucks;
+        S.history.unshift({
+            date: todayStr(),
+            time: nowStr(),
+            kidIdx: currentKid,
+            rewardName: confirmReward.name,
+            rewardEmoji: confirmReward.emoji,
+            cost: confirmReward.bucks
+        });
+        showToast(`Redeemed: ${confirmReward.name}`);
+        sendNotification(S.kids[currentKid], confirmReward.name, confirmReward.bucks, false);
+        confirmReward = null;
+        save();
+        render();
     }
 
-    function cancelBuy() { confirmReward = null; render(); }
+    function cancelBuy() {
+        confirmReward = null;
+        render();
+    }
 
     function contributeGroupReward(grId) {
-      const gr = S.groupRewards.find(g => g.id === grId); if (!gr) return;
-      if (!gr.contributions) gr.contributions = [false, false, false];
-      if (gr.contributions[currentKid]) return; // already contributed
-      if (S.balances[currentKid] < gr.bucks) return;
-      // Confirm
-      confirmReward = { ...gr, _isGroup: true };
-      renderModal();
+        const gr = S.groupRewards.find(g => g.id === grId);
+        if (!gr)
+            return;
+        if (!gr.contributions)
+            gr.contributions = [false, false, false];
+        if (gr.contributions[currentKid])
+            return; // already contributed
+        if (S.balances[currentKid] < gr.bucks)
+            return;
+        // Confirm
+        confirmReward = {
+            ...gr,
+            _isGroup: true
+        };
+        renderModal();
     }
 
     function confirmGroupContribute() {
-      const gr = S.groupRewards.find(g => g.id === confirmReward.id); if (!gr) return;
-      if (!gr.contributions) gr.contributions = [false, false, false];
-      gr.contributions[currentKid] = true;
-      S.balances[currentKid] -= gr.bucks;
-      // Check if all contributed
-      if (gr.contributions.every(c => c)) {
-        S.history.unshift({ date: todayStr(), time: nowStr(), kidIdx: -1, rewardName: gr.name, rewardEmoji: gr.emoji, cost: gr.bucks * 3, isGroup: true });
-        gr.contributions = [false, false, false];
-        sendNotification(null, gr.name, gr.bucks, true);
-        showToast(`🎉 ${gr.name} fully unlocked!`);
-      } else {
-        sendNotification(S.kids[currentKid], `${gr.name} (group — contributed)`, gr.bucks, false);
-        showToast(`Contributed ${gr.bucks} Bucks!`);
-      }
-      confirmReward = null; save(); render();
+        const gr = S.groupRewards.find(g => g.id === confirmReward.id);
+        if (!gr)
+            return;
+        if (!gr.contributions)
+            gr.contributions = [false, false, false];
+        gr.contributions[currentKid] = true;
+        S.balances[currentKid] -= gr.bucks;
+        // Check if all contributed
+        if (gr.contributions.every(c => c)) {
+            S.history.unshift({
+                date: todayStr(),
+                time: nowStr(),
+                kidIdx: -1,
+                rewardName: gr.name,
+                rewardEmoji: gr.emoji,
+                cost: gr.bucks * 3,
+                isGroup: true
+            });
+            gr.contributions = [false, false, false];
+            sendNotification(null, gr.name, gr.bucks, true);
+            showToast(`🎉 ${gr.name} fully unlocked!`);
+        } else {
+            sendNotification(S.kids[currentKid], `${gr.name} (group — contributed)`, gr.bucks, false);
+            showToast(`Contributed ${gr.bucks} Bucks!`);
+        }
+        confirmReward = null;
+        save();
+        render();
     }
 
     function renderModal() {
-      const overlay = document.createElement('div');
-      overlay.className = 'modal-overlay';
-      const isGroup = confirmReward._isGroup;
-      overlay.innerHTML = `
-        <div class="modal-box">
-          <div class="modal-emoji">${confirmReward.emoji}</div>
-          <div class="modal-title">${isGroup ? 'Contribute to' : 'Redeem'} ${confirmReward.name}?</div>
-          <div class="modal-sub">${isGroup
-            ? `Contributes ${confirmReward.bucks} Bucks from ${S.kids[currentKid]}'s balance toward this group reward`
-            : `Costs ${confirmReward.bucks} Bucks from ${S.kids[currentKid]}'s balance`}</div>
-          <div class="modal-btns">
-            <button class="mbtn mbtn-no" id="modal-cancel">Cancel</button>
-            <button class="mbtn mbtn-yes" id="modal-yes">${isGroup ? 'Contribute!' : 'Yes, Redeem!'}</button>
-          </div>
-        </div>`;
-      document.getElementById('app').appendChild(overlay);
-      document.getElementById('modal-cancel').onclick = cancelBuy;
-      document.getElementById('modal-yes').onclick = isGroup ? confirmGroupContribute : confirmBuy;
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        const isGroup = confirmReward._isGroup;
+        overlay.innerHTML = `
+    <div class="modal-box">
+      <div class="modal-emoji">${
+        confirmReward.emoji}</div>
+      <div class="modal-title">${isGroup ? 'Contribute to' : 'Redeem'} ${confirmReward.name}?</div>
+      <div class="modal-sub">${isGroup ? `Contributes ${confirmReward.bucks} Bucks from ${S.kids[currentKid]}'s balance toward this group reward` : `Costs ${confirmReward.bucks} Bucks from ${S.kids[currentKid]}'s balance`}</div>
+      <div class="modal-btns">
+        <button class="mbtn mbtn-no" id="modal-cancel">Cancel</button>
+        <button class="mbtn mbtn-yes" id="modal-yes">${
+
+        isGroup ? 'Contribute!' : 'Yes, Redeem!'}</button>
+      </div>
+    </div>`
+
+        ;
+        document.getElementById('app').appendChild(overlay);
+        document.getElementById('modal-cancel').onclick = cancelBuy;
+        document.getElementById('modal-yes').onclick = isGroup ? confirmGroupContribute : confirmBuy;
     }
 
     function render() {
-      if (adminMode) { renderAdmin(); return; }
-      const app = document.getElementById('app');
-      const balance = S.balances[currentKid] || 0;
-
-      let html = `
-        <div class="top-bar">
-          <h1>☀️ Odom Summer Store</h1>
-          <button class="admin-btn" id="admin-toggle">⚙️ Parent</button>
-        </div>
-        <div class="kid-tabs">
-          ${S.kids.map((k,i) => `<div class="kid-tab k${i}${currentKid===i?' active':''}" data-kid="${i}">${k}</div>`).join('')}
-        </div>
-        <div class="balance-card k${currentKid}">
-          <div>
-            <div class="bal-label">${S.kids[currentKid]}'s Balance</div>
-            <div class="bal-amount">${balance}</div>
-            <div class="bal-unit">Bucks</div>
-          </div>
-          <div class="bal-icon">💵</div>
-        </div>
-        <div class="nav-tabs">
-          <div class="nav-tab${currentTab==='earn'?' active':''}" data-tab="earn">★ Earn</div>
-          <div class="nav-tab${currentTab==='shop'?' active':''}" data-tab="shop">Shop</div>
-          <div class="nav-tab${currentTab==='history'?' active':''}" data-tab="history">History</div>
-        </div>
-        <div class="content">`;
-
-      if (currentTab === 'earn') {
-        html += `<div class="section-label">Today's Activities</div><div class="activity-list">`;
-        const vis = S.activities.filter(a => !a.kidVis || a.kidVis[currentKid] !== false);
-        if (vis.length === 0) html += `<div class="empty">No activities assigned — ask a parent</div>`;
-        vis.forEach(act => {
-          const count = getCount(currentKid, act.id);
-          const done = count > 0;
-          if (act.repeatable) {
-            const atMax = count >= 3;
-            html += `
-              <div class="activity-item${done?' done':''}">
-                <div class="act-left">
-                  <span class="act-emoji">${act.emoji}</span>
-                  <div class="act-info">
-                    <div class="act-name">${act.name}</div>
-                    ${act.desc?`<div class="act-desc">${act.desc} · repeatable</div>`:''}
-                  </div>
-                </div>
-                <div class="act-right">
-                  <span class="act-bucks">+${act.bucks} 💵</span>
-                  <div class="counter">
-                    <span class="counter-val">${count}</span>
-                    <button class="counter-btn plus" data-inc="${act.id}" ${atMax?'disabled style="opacity:0.25;cursor:not-allowed"':''}>+</button>
-                  </div>
-                </div>
-              </div>`;
-          } else {
-            html += `
-              <div class="activity-item${done?' done':''}" ${!done?`data-check="${act.id}" style="cursor:pointer"`:'style="cursor:default"'}>
-                <div class="act-left">
-                  <span class="act-emoji">${act.emoji}</span>
-                  <div class="act-info">
-                    <div class="act-name">${act.name}</div>
-                    ${act.desc?`<div class="act-desc">${act.desc}</div>`:''}
-                  </div>
-                </div>
-                <div class="act-right">
-                  <span class="act-bucks">+${act.bucks} 💵</span>
-                  <div class="check-circle${done?' checked':''}${!done?` data-check="${act.id}"`:''}">
-                    <svg width="14" height="11" viewBox="0 0 14 11" fill="none">
-                      <path d="M1 5L5.5 9.5L13 1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>`;
-          }
-        });
-        html += `</div>`;
-
-      } else if (currentTab === 'shop') {
-        html += `<div class="section-label">Redeem Your Bucks</div><div class="shop-grid">`;
-        const sortedRewards = [...S.rewards].sort((a,b) => a.bucks - b.bucks);
-        if (sortedRewards.length === 0) html += `<div class="empty" style="grid-column:1/-1">No rewards yet</div>`;
-        sortedRewards.forEach(rew => {
-          const can = balance >= rew.bucks;
-          html += `
-            <div class="shop-item${can?'':' cant-afford'}" data-buy="${rew.id}">
-              <div class="shop-emoji">${rew.emoji}</div>
-              <div class="shop-name">${rew.name}</div>
-              <div class="shop-cost">${rew.bucks} 💵</div>
-            </div>`;
-        });
-        html += `</div>`;
-
-        // Group rewards section
-        if (S.groupRewards && S.groupRewards.length > 0) {
-          html += `<div class="group-section-label">Group Rewards — All Kids Contribute</div>`;
-          const sortedGroupRewards = [...S.groupRewards].sort((a,b) => a.bucks - b.bucks);
-          sortedGroupRewards.forEach(gr => {
-            const contribs = gr.contributions || [false, false, false];
-            const myContributed = contribs[currentKid];
-            const allDone = contribs.every(c => c);
-            const canAfford = balance >= gr.bucks;
-            const btnDisabled = myContributed || !canAfford;
-            html += `
-              <div class="group-item${allDone?' fully-funded':''}${!myContributed && !canAfford?' cant-afford':''}" style="${!myContributed && !canAfford?'opacity:0.28':''}">
-                <div class="group-item-top">
-                  <span class="group-item-emoji">${gr.emoji}</span>
-                  <div class="group-item-info">
-                    <div class="group-item-name">${gr.name}</div>
-                    <div class="group-item-cost">${gr.bucks} 💵 each</div>
-                  </div>
-                  <button class="group-contribute-btn${myContributed?' contributed':''}"
-                    data-contribute="${gr.id}" ${btnDisabled?'disabled':''}>
-                    ${myContributed ? '✓ Done' : 'Contribute'}
-                  </button>
-                </div>
-                <div class="group-progress">
-                  ${S.kids.map((_,i) => `<div class="group-progress-seg${contribs[i]?' filled k'+i:''}"></div>`).join('')}
-                </div>
-                <div class="group-progress-labels">
-                  ${S.kids.map((k,i) => `<div class="group-progress-label${contribs[i]?' filled k'+i:''}">${k}</div>`).join('')}
-                </div>
-                ${allDone ? `<div class="group-complete-badge">✓ Unlocked!</div>` : ''}
-              </div>`;
-          });
+        if (adminMode) {
+            renderAdmin();
+            return;
         }
+        const app = document.getElementById('app');
+        const balance = S.balances[currentKid] || 0;
 
-      } else {
-        html += `<div class="section-label">Redemption History</div>`;
-        const kidHistory = S.history.filter(h => h.kidIdx === currentKid || h.isGroup);
-        if (kidHistory.length === 0) {
-          html += `<div class="empty">Nothing redeemed yet</div>`;
-        } else {
-          const byDate = {};
-          kidHistory.forEach(h => { if (!byDate[h.date]) byDate[h.date] = []; byDate[h.date].push(h); });
-          Object.keys(byDate).sort((a,b)=>b.localeCompare(a)).forEach(date => {
-            html += `<div class="history-day"><div class="history-date">${formatDate(date)}</div>`;
-            byDate[date].forEach(h => {
-              html += `
-                <div class="history-entry">
-                  <span class="history-entry-emoji">${h.rewardEmoji}</span>
-                  <div class="history-entry-info">
-                    <div class="history-entry-name">${h.rewardName}${h.isGroup?' <span style="font-size:10px;color:var(--muted);font-weight:600">· Group</span>':''}</div>
-                    <div class="history-time">${h.time || ''}</div>
-                  </div>
-                  <span class="history-cost">${h.isGroup ? h.cost/3 : h.cost} 💵</span>
-                </div>`;
+        let html = `
+    <div class="top-bar">
+      <h1>☀️ Odom Summer Store</h1>
+      <button class="admin-btn" id="admin-toggle">⚙️ Parent</button>
+    </div>
+    <div class="kid-tabs">
+      ${
+
+
+
+
+        S.kids.map((k, i) => `<div class="kid-tab k${i}${currentKid === i ? ' active' : ''}" data-kid="${i}">${k}</div>`).join('')}
+    </div>
+    <div class="balance-card k${
+        currentKid}">
+      <div>
+        <div class="bal-label">${
+        S.kids[currentKid]}'s Balance</div>
+        <div class="bal-amount">${balance}</div>
+        <div class="bal-unit">Bucks</div>
+      </div>
+      <div class="bal-icon">💵</div>
+    </div>
+    <div class="nav-tabs">
+      <div class="nav-tab${
+
+
+
+
+        currentTab === 'earn' ? ' active' : ''}" data-tab="earn">★ Earn</div>
+      <div class="nav-tab${currentTab === 'shop' ? ' active' : ''}" data-tab="shop">Shop</div>
+      <div class="nav-tab${currentTab === 'history' ? ' active' : ''}" data-tab="history">History</div>
+    </div>
+    <div class="content">`
+
+        ;
+
+        if (currentTab === 'earn') {
+            html += `<div class="section-label">Today's Activities</div><div class="activity-list">`;
+            const vis = S.activities.filter(a => !a.kidVis || a.kidVis[currentKid] !== false);
+            if (vis.length === 0)
+                html += `<div class="empty">No activities assigned — ask a parent</div>`;
+            vis.forEach(act => {
+                const count = getCount(currentKid, act.id);
+                const done = count > 0;
+                if (act.repeatable) {
+                    const atMax = count >= 3;
+                    html += `
+          <div class="activity-item${done ? ' done' : ''}">
+            <div class="act-left">
+              <span class="act-emoji">${
+                    act.emoji}</span>
+              <div class="act-info">
+                <div class="act-name">${
+                    act.name}</div>
+                ${act.desc ? `<div class="act-desc">${act.desc} · repeatable</div>` : ''}
+              </div>
+            </div>
+            <div class="act-right">
+              <span class="act-bucks">+${
+
+
+                    act.bucks} 💵</span>
+              <div class="counter">
+                <span class="counter-val">${
+                    count}</span>
+                <button class="counter-btn plus" data-inc="${act.id}" ${atMax ? 'disabled style="opacity:0.25;cursor:not-allowed"' : ''}>+</button>
+              </div>
+            </div>
+          </div>`
+
+
+                    ;
+                } else {
+                    html += `
+          <div class="activity-item${done ? ' done' : ''}" ${!done ? `data-check="${act.id}" style="cursor:pointer"` : 'style="cursor:default"'}>
+            <div class="act-left">
+              <span class="act-emoji">${
+                    act.emoji}</span>
+              <div class="act-info">
+                <div class="act-name">${
+                    act.name}</div>
+                ${act.desc ? `<div class="act-desc">${act.desc}</div>` : ''}
+              </div>
+            </div>
+            <div class="act-right">
+              <span class="act-bucks">+${
+
+
+                    act.bucks} 💵</span>
+              <div class="check-circle${done ? ' checked' : ''}${!done ? ` data-check="${act.id}"` : ''}">
+                <svg width="14" height="11" viewBox="0 0 14 11" fill="none">
+                  <path d="M1 5L5.5 9.5L13 1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+          </div>`
+
+
+
+
+
+                    ;
+                }
             });
             html += `</div>`;
-          });
+
+        } else if (currentTab === 'shop') {
+            html += `<div class="section-label">Redeem Your Bucks</div><div class="shop-grid">`;
+            const sortedRewards = [...S.rewards].sort((a, b) => a.bucks - b.bucks);
+            if (sortedRewards.length === 0)
+                html += `<div class="empty" style="grid-column:1/-1">No rewards yet</div>`;
+            sortedRewards.forEach(rew => {
+                const can = balance >= rew.bucks;
+                html += `
+        <div class="shop-item${can ? '' : ' cant-afford'}" data-buy="${rew.id}">
+          <div class="shop-emoji">${rew.emoji}</div>
+          <div class="shop-name">${rew.name}</div>
+          <div class="shop-cost">${rew.bucks} 💵</div>
+        </div>`
+                ;
+            });
+            html += `</div>`;
+
+            // Group rewards section
+            if (S.groupRewards && S.groupRewards.length > 0) {
+                html += `<div class="group-section-label">Group Rewards — All Kids Contribute</div>`;
+                const sortedGroupRewards = [...S.groupRewards].sort((a, b) => a.bucks - b.bucks);
+                sortedGroupRewards.forEach(gr => {
+                    const contribs = gr.contributions || [false, false, false];
+                    const myContributed = contribs[currentKid];
+                    const allDone = contribs.every(c => c);
+                    const canAfford = balance >= gr.bucks;
+                    const btnDisabled = myContributed || !canAfford;
+                    html += `
+          <div class="group-item${allDone ? ' fully-funded' : ''}${!myContributed && !canAfford ? ' cant-afford' : ''}" style="${!myContributed && !canAfford ? 'opacity:0.28' : ''}">
+            <div class="group-item-top">
+              <span class="group-item-emoji">${
+                    gr.emoji}</span>
+              <div class="group-item-info">
+                <div class="group-item-name">${
+                    gr.name}</div>
+                <div class="group-item-cost">${gr.bucks} 💵 each</div>
+              </div>
+              <button class="group-contribute-btn${
+                    myContributed ? ' contributed' : ''}"
+                data-contribute="${gr.id}" ${btnDisabled ? 'disabled' : ''}>
+                ${myContributed ? '✓ Done' : 'Contribute'}
+              </button>
+            </div>
+            <div class="group-progress">
+              ${
+
+
+                    S.kids.map((_, i) => `<div class="group-progress-seg${contribs[i] ? ' filled k' + i : ''}"></div>`).join('')}
+            </div>
+            <div class="group-progress-labels">
+              ${
+
+                    S.kids.map((k, i) => `<div class="group-progress-label${contribs[i] ? ' filled k' + i : ''}">${k}</div>`).join('')}
+            </div>
+            ${
+                    allDone ? `<div class="group-complete-badge">✓ Unlocked!</div>` : ''}
+          </div>`
+                    ;
+                });
+            }
+
+        } else {
+            html += `<div class="section-label">Redemption History</div>`;
+            const kidHistory = S.history.filter(h => h.kidIdx === currentKid || h.isGroup);
+            if (kidHistory.length === 0) {
+                html += `<div class="empty">Nothing redeemed yet</div>`;
+            } else {
+                const byDate = {};
+                kidHistory.forEach(h => {
+                    if (!byDate[h.date])
+                        byDate[h.date] = [];
+                    byDate[h.date].push(h);
+                });
+                Object.keys(byDate).sort((a, b) => b.localeCompare(a)).forEach(date => {
+                    html += `<div class="history-day"><div class="history-date">${formatDate(date)}</div>`;
+                    byDate[date].forEach(h => {
+                        html += `
+            <div class="history-entry">
+              <span class="history-entry-emoji">${
+                        h.rewardEmoji}</span>
+              <div class="history-entry-info">
+                <div class="history-entry-name">${
+                        h.rewardName}${h.isGroup ? ' <span style="font-size:10px;color:var(--muted);font-weight:600">· Group</span>' : ''}</div>
+                <div class="history-time">${h.time || ''}</div>
+              </div>
+              <span class="history-cost">${
+                        h.isGroup ? h.cost / 3 : h.cost} 💵</span>
+            </div>`
+                        ;
+                    });
+                    html += `</div>`;
+                });
+            }
         }
-      }
 
-      html += `</div>`;
-      app.innerHTML = html;
+        html += `</div>`;
+        app.innerHTML = html;
 
-      document.getElementById('admin-toggle').onclick = () => showPinPad();
-      document.querySelectorAll('.kid-tab').forEach(el => { el.onclick = () => { currentKid = +el.dataset.kid; render(); }; });
-      document.querySelectorAll('.nav-tab').forEach(el => { el.onclick = () => { currentTab = el.dataset.tab; render(); }; });
-      document.querySelectorAll('[data-inc]').forEach(el => { el.onclick = (e) => { e.stopPropagation(); increment(+el.dataset.inc); }; });
-      document.querySelectorAll('[data-dec]').forEach(el => { el.onclick = (e) => { e.stopPropagation(); decrement(+el.dataset.dec); }; });
-      const seenCheck = new Set();
-      document.querySelectorAll('[data-check]').forEach(el => {
-        el.onclick = (e) => {
-          e.stopPropagation();
-          const id = +el.dataset.check;
-          if (seenCheck.has(id)) return;
-          seenCheck.add(id); toggleCheck(id);
-        };
-      });
-      document.querySelectorAll('[data-buy]').forEach(el => {
-        el.onclick = () => { const rew = S.rewards.find(r => r.id === +el.dataset.buy); if (rew) openShopConfirm(rew); };
-      });
-      document.querySelectorAll('[data-contribute]').forEach(el => {
-        el.onclick = () => { if (!el.disabled) contributeGroupReward(+el.dataset.contribute); };
-      });
+        document.getElementById('admin-toggle').onclick = () => showPinPad();
+        document.querySelectorAll('.kid-tab').forEach(el => {
+            el.onclick = () => {
+                currentKid = +el.dataset.kid;
+                render();
+            };
+        });
+        document.querySelectorAll('.nav-tab').forEach(el => {
+            el.onclick = () => {
+                currentTab = el.dataset.tab;
+                render();
+            };
+        });
+        document.querySelectorAll('[data-inc]').forEach(el => {
+            el.onclick = (e) => {
+                e.stopPropagation();
+                increment(+el.dataset.inc);
+            };
+        });
+        document.querySelectorAll('[data-dec]').forEach(el => {
+            el.onclick = (e) => {
+                e.stopPropagation();
+                decrement(+el.dataset.dec);
+            };
+        });
+        const seenCheck = new Set();
+        document.querySelectorAll('[data-check]').forEach(el => {
+            el.onclick = (e) => {
+                e.stopPropagation();
+                const id = +el.dataset.check;
+                if (seenCheck.has(id))
+                    return;
+                seenCheck.add(id);
+                toggleCheck(id);
+            };
+        });
+        document.querySelectorAll('[data-buy]').forEach(el => {
+            el.onclick = () => {
+                const rew = S.rewards.find(r => r.id === +el.dataset.buy);
+                if (rew)
+                    openShopConfirm(rew);
+            };
+        });
+        document.querySelectorAll('[data-contribute]').forEach(el => {
+            el.onclick = () => {
+                if (!el.disabled)
+                    contributeGroupReward(+el.dataset.contribute);
+            };
+        });
     }
 
     function renderAdmin() {
-      const app = document.getElementById('app');
-      let html = `
-        <div class="admin-bar">
-          <span>⚙️ Parent Settings</span>
-          <button class="done-btn" id="admin-done">Done</button>
-        </div>
+        const app = document.getElementById('app');
+        let html = `
+    <div class="admin-bar">
+      <span>⚙️ Parent Settings</span>
+      <button class="done-btn" id="admin-done">Done</button>
+    </div>
 
-        <div class="admin-section">
-          <h3>Kid Names</h3>
-          <div class="kid-name-grid">
-            ${S.kids.map((k,i) => `<div class="kid-name-row"><label>Kid ${i+1}</label><input class="f-wide" id="kname-${i}" value="${k}" /></div>`).join('')}
+    <div class="admin-section">
+      <h3>Kid Names</h3>
+      <div class="kid-name-grid">
+        ${
+
+
+
+
+
+
+
+        S.kids.map((k, i) => `<div class="kid-name-row"><label>Kid ${i + 1}</label><input class="f-wide" id="kname-${i}" value="${k}" /></div>`).join('')}
+      </div>
+      <button class="save-btn" id="save-names">Save Names</button>
+    </div>
+
+    <div class="admin-section">
+      <h3>Activities</h3>
+      ${
+
+
+
+
+
+        S.activities.map(a => {const isEditing = editingId === a.id && editingType === 'activity';return `
+        <div class="admin-row admin-act-row">
+          <div class="admin-act-row-top">
+            <span class="admin-row-emoji">${
+
+            a.emoji}</span>
+            <span class="admin-row-name">${a.name}</span>
+            <span class="admin-row-meta">${a.bucks} 💵${a.repeatable ? ' · rep' : ''}</span>
+            <button class="edit-btn" data-edit-act="${a.id}" title="Edit">✎</button>
+            <button class="del-btn" data-del-act="${a.id}">×</button>
           </div>
-          <button class="save-btn" id="save-names">Save Names</button>
-        </div>
+          <div class="act-kid-toggles">
+            ${
 
-        <div class="admin-section">
-          <h3>Activities</h3>
-          ${S.activities.map(a => {
-            const isEditing = editingId === a.id && editingType === 'activity';
-            return `
-            <div class="admin-row admin-act-row">
-              <div class="admin-act-row-top">
-                <span class="admin-row-emoji">${a.emoji}</span>
-                <span class="admin-row-name">${a.name}</span>
-                <span class="admin-row-meta">${a.bucks} 💵${a.repeatable?' · rep':''}</span>
-                <button class="edit-btn" data-edit-act="${a.id}" title="Edit">✎</button>
-                <button class="del-btn" data-del-act="${a.id}">×</button>
-              </div>
-              <div class="act-kid-toggles">
-                ${S.kids.map((k,i) => {
-                  const on = !a.kidVis || a.kidVis[i] !== false;
-                  return `<button class="act-kid-toggle k${i}${on?' on':''}" data-vis-act="${a.id}" data-vis-kid="${i}">${k}</button>`;
-                }).join('')}
-              </div>
-              ${isEditing ? `
-              <div class="edit-form">
-                <div class="edit-form-row">
-                  <input id="ea-emoji" class="ef-emoji" value="${a.emoji}" maxlength="2" />
-                  <input id="ea-name" class="ef-wide" value="${a.name}" placeholder="Activity name" />
-                </div>
-                <div class="edit-form-row">
-                  <input id="ea-desc" class="ef-wide" value="${a.desc || ''}" placeholder="Description (optional)" />
-                  <input id="ea-bucks" class="ef-sm" type="number" value="${a.bucks}" min="1" />
-                </div>
-                <div class="toggle-row">
-                  <span class="toggle-label">Repeatable</span>
-                  <button class="toggle${a.repeatable?' on':''}" id="ea-repeat" data-on="${a.repeatable}"></button>
-                </div>
-                <div class="edit-form-actions">
-                  <button class="cancel-edit-btn" id="cancel-edit-act">Cancel</button>
-                  <button class="save-edit-btn" id="save-edit-act" data-id="${a.id}">Save Changes</button>
-                </div>
-              </div>` : ''}
-            </div>`;
-          }).join('')}
-          <div class="add-form">
-            <input id="na-emoji" class="f-emoji" placeholder="⭐" maxlength="2" />
-            <input id="na-name" class="f-wide" placeholder="Activity name" />
-            <input id="na-desc" class="f-wide" placeholder="Description (optional)" />
-            <input id="na-bucks" class="f-sm" type="number" placeholder="Bucks" min="1" value="5" />
-            <div class="toggle-row" style="width:100%">
-              <span class="toggle-label">Repeatable (can do multiple times/day)</span>
-              <button class="toggle" id="na-repeat" data-on="false"></button>
+            S.kids.map((k, i) => {const on = !a.kidVis || a.kidVis[i] !== false;return `<button class="act-kid-toggle k${i}${on ? ' on' : ''}" data-vis-act="${a.id}" data-vis-kid="${i}">${k}</button>`;}).join('')}
+          </div>
+          ${
+            isEditing ? `
+          <div class="edit-form">
+            <div class="edit-form-row">
+              <input id="ea-emoji" class="ef-emoji" value="${
+
+            a.emoji}" maxlength="2" />
+              <input id="ea-name" class="ef-wide" value="${a.name}" placeholder="Activity name" />
             </div>
-            <button class="add-btn" id="add-act-btn">Add Activity</button>
+            <div class="edit-form-row">
+              <input id="ea-desc" class="ef-wide" value="${
+
+            a.desc || ''}" placeholder="Description (optional)" />
+              <input id="ea-bucks" class="ef-sm" type="number" value="${a.bucks}" min="1" />
+            </div>
+            <div class="toggle-row">
+              <span class="toggle-label">Repeatable</span>
+              <button class="toggle${
+
+
+            a.repeatable ? ' on' : ''}" id="ea-repeat" data-on="${a.repeatable}"></button>
+            </div>
+            <div class="edit-form-actions">
+              <button class="cancel-edit-btn" id="cancel-edit-act">Cancel</button>
+              <button class="save-edit-btn" id="save-edit-act" data-id="${
+
+
+            a.id}">Save Changes</button>
+            </div>
+          </div>`
+            : ''}
+        </div>`;}).join('')}
+      <div class="add-form">
+        <input id="na-emoji" class="f-emoji" placeholder="⭐" maxlength="2" />
+        <input id="na-name" class="f-wide" placeholder="Activity name" />
+        <input id="na-desc" class="f-wide" placeholder="Description (optional)" />
+        <input id="na-bucks" class="f-sm" type="number" placeholder="Bucks" min="1" value="5" />
+        <div class="toggle-row" style="width:100%">
+          <span class="toggle-label">Repeatable (can do multiple times/day)</span>
+          <button class="toggle" id="na-repeat" data-on="false"></button>
+        </div>
+        <button class="add-btn" id="add-act-btn">Add Activity</button>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h3>Rewards / Shop Items</h3>
+      ${
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        S.rewards.map(r => {const isEditing = editingId === r.id && editingType === 'reward';return `
+        <div class="admin-row" style="flex-direction:column;align-items:flex-start;gap:2px;">
+          <div style="display:flex;align-items:center;gap:8px;width:100%">
+            <span class="admin-row-emoji">${
+
+            r.emoji}</span>
+            <span class="admin-row-name">${r.name}</span>
+            <span class="admin-row-meta">${r.bucks} 💵</span>
+            <button class="edit-btn" data-edit-rew="${r.id}" title="Edit">✎</button>
+            <button class="del-btn" data-del-rew="${r.id}">×</button>
           </div>
-        </div>
+          ${
+            isEditing ? `
+          <div class="edit-form">
+            <div class="edit-form-row">
+              <input id="er-emoji" class="ef-emoji" value="${
 
-        <div class="admin-section">
-          <h3>Rewards / Shop Items</h3>
-          ${S.rewards.map(r => {
-            const isEditing = editingId === r.id && editingType === 'reward';
-            return `
-            <div class="admin-row" style="flex-direction:column;align-items:flex-start;gap:2px;">
-              <div style="display:flex;align-items:center;gap:8px;width:100%">
-                <span class="admin-row-emoji">${r.emoji}</span>
-                <span class="admin-row-name">${r.name}</span>
-                <span class="admin-row-meta">${r.bucks} 💵</span>
-                <button class="edit-btn" data-edit-rew="${r.id}" title="Edit">✎</button>
-                <button class="del-btn" data-del-rew="${r.id}">×</button>
-              </div>
-              ${isEditing ? `
-              <div class="edit-form">
-                <div class="edit-form-row">
-                  <input id="er-emoji" class="ef-emoji" value="${r.emoji}" maxlength="2" />
-                  <input id="er-name" class="ef-wide" value="${r.name}" placeholder="Reward name" />
-                  <input id="er-bucks" class="ef-sm" type="number" value="${r.bucks}" min="1" />
-                </div>
-                <div class="edit-form-actions">
-                  <button class="cancel-edit-btn" id="cancel-edit-rew">Cancel</button>
-                  <button class="save-edit-btn" id="save-edit-rew" data-id="${r.id}">Save Changes</button>
-                </div>
-              </div>` : ''}
-            </div>`;
-          }).join('')}
-          <div class="add-form">
-            <input id="nr-emoji" class="f-emoji" placeholder="🎁" maxlength="2" />
-            <input id="nr-name" class="f-wide" placeholder="Reward name" />
-            <input id="nr-bucks" class="f-sm" type="number" placeholder="Bucks" min="1" value="10" />
-            <button class="add-btn" id="add-rew-btn">Add Reward</button>
+            r.emoji}" maxlength="2" />
+              <input id="er-name" class="ef-wide" value="${r.name}" placeholder="Reward name" />
+              <input id="er-bucks" class="ef-sm" type="number" value="${r.bucks}" min="1" />
+            </div>
+            <div class="edit-form-actions">
+              <button class="cancel-edit-btn" id="cancel-edit-rew">Cancel</button>
+              <button class="save-edit-btn" id="save-edit-rew" data-id="${
+
+
+            r.id}">Save Changes</button>
+            </div>
+          </div>`
+            : ''}
+        </div>`;}).join('')}
+      <div class="add-form">
+        <input id="nr-emoji" class="f-emoji" placeholder="🎁" maxlength="2" />
+        <input id="nr-name" class="f-wide" placeholder="Reward name" />
+        <input id="nr-bucks" class="f-sm" type="number" placeholder="Bucks" min="1" value="10" />
+        <button class="add-btn" id="add-rew-btn">Add Reward</button>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h3>Group Rewards</h3>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">All three kids must contribute to unlock these. Set the amount each kid contributes.</p>
+      ${
+
+
+
+
+
+
+
+
+
+
+        (S.groupRewards || []).map(gr => {const isEditing = editingId === gr.id && editingType === 'group';const contribs = gr.contributions || [false, false, false];return `
+        <div class="admin-row" style="flex-direction:column;align-items:flex-start;gap:2px;">
+          <div style="display:flex;align-items:center;gap:8px;width:100%">
+            <span class="admin-row-emoji">${
+
+            gr.emoji}</span>
+            <span class="admin-row-name">${gr.name}</span>
+            <span class="admin-row-meta">${gr.bucks} 💵 each</span>
+            <button class="edit-btn" data-edit-grp="${gr.id}" title="Edit">✎</button>
+            <button class="del-btn" data-del-grp="${gr.id}">×</button>
           </div>
-        </div>
+          <div style="display:flex;gap:4px;margin-top:4px;">
+            ${
 
-        <div class="admin-section">
-          <h3>Group Rewards</h3>
-          <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">All three kids must contribute to unlock these. Set the amount each kid contributes.</p>
-          ${(S.groupRewards || []).map(gr => {
-            const isEditing = editingId === gr.id && editingType === 'group';
-            const contribs = gr.contributions || [false,false,false];
-            return `
-            <div class="admin-row" style="flex-direction:column;align-items:flex-start;gap:2px;">
-              <div style="display:flex;align-items:center;gap:8px;width:100%">
-                <span class="admin-row-emoji">${gr.emoji}</span>
-                <span class="admin-row-name">${gr.name}</span>
-                <span class="admin-row-meta">${gr.bucks} 💵 each</span>
-                <button class="edit-btn" data-edit-grp="${gr.id}" title="Edit">✎</button>
-                <button class="del-btn" data-del-grp="${gr.id}">×</button>
-              </div>
-              <div style="display:flex;gap:4px;margin-top:4px;">
-                ${S.kids.map((k,i) => `<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:${contribs[i]?'var(--k'+i+'-mid)':'var(--card2)'};color:${contribs[i]?'white':'var(--muted)'};">${k}</span>`).join('')}
-              </div>
-              ${isEditing ? `
-              <div class="edit-form">
-                <div class="edit-form-row">
-                  <input id="egr-emoji" class="ef-emoji" value="${gr.emoji}" maxlength="2" />
-                  <input id="egr-name" class="ef-wide" value="${gr.name}" placeholder="Reward name" />
-                  <input id="egr-bucks" class="ef-sm" type="number" value="${gr.bucks}" min="1" />
-                </div>
-                <div class="edit-form-actions">
-                  <button class="cancel-edit-btn" id="cancel-edit-grp">Cancel</button>
-                  <button class="save-edit-btn" id="save-edit-grp" data-id="${gr.id}">Save Changes</button>
-                </div>
-              </div>` : ''}
-            </div>`;
-          }).join('')}
-          <div class="add-form">
-            <input id="ngr-emoji" class="f-emoji" placeholder="🍔" maxlength="2" />
-            <input id="ngr-name" class="f-wide" placeholder="Group reward name" />
-            <input id="ngr-bucks" class="f-sm" type="number" placeholder="Each" min="1" value="20" />
-            <button class="add-btn" id="add-grp-btn">Add</button>
+            S.kids.map((k, i) => `<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:${contribs[i] ? 'var(--k' + i + '-mid)' : 'var(--card2)'};color:${contribs[i] ? 'white' : 'var(--muted)'};">${k}</span>`).join('')}
           </div>
-          ${(S.groupRewards||[]).some(g => (g.contributions||[]).some(c=>c)) ? `<button class="danger-btn" id="reset-group-contrib" style="margin-top:8px">↺ Reset Group Reward Contributions</button>` : ''}
-        </div>
+          ${
+            isEditing ? `
+          <div class="edit-form">
+            <div class="edit-form-row">
+              <input id="egr-emoji" class="ef-emoji" value="${
 
-        <div class="admin-section">
-          <h3>Buck Balances</h3>
-          <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">Edit a kid's balance directly, then hit Save.</p>
-          ${S.kids.map((k,i) => `
-            <div class="admin-row" style="gap:10px;">
-              <span class="admin-row-emoji">💵</span>
-              <span class="admin-row-name">${k}</span>
-              <input id="bal-input-${i}" type="number" min="0" value="${S.balances[i]}"
-                style="width:72px;border:1px solid var(--border2);border-radius:5px;padding:5px 8px;font-family:'Inter',sans-serif;font-size:13px;background:var(--bg);color:var(--text);" />
-              <button class="save-btn" data-save-bal="${i}" style="padding:5px 12px;">Save</button>
-            </div>`).join('')}
-        </div>
+            gr.emoji}" maxlength="2" />
+              <input id="egr-name" class="ef-wide" value="${gr.name}" placeholder="Reward name" />
+              <input id="egr-bucks" class="ef-sm" type="number" value="${gr.bucks}" min="1" />
+            </div>
+            <div class="edit-form-actions">
+              <button class="cancel-edit-btn" id="cancel-edit-grp">Cancel</button>
+              <button class="save-edit-btn" id="save-edit-grp" data-id="${
 
-        <div class="admin-section">
-          <h3>Resets</h3>
-          <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5">Each button resets that data for all kids. Activity counts also reset automatically every night.</p>
-          <button class="danger-btn" id="reset-activities">↺ Reset Today's Activity Counts</button>
-          <button class="danger-btn" id="reset-bucks" style="margin-top:8px">↺ Reset All Buck Balances to Zero</button>
-          <button class="danger-btn" id="reset-history" style="margin-top:8px">↺ Reset Redemption History</button>
-        </div>`;
 
-      app.innerHTML = html;
+            gr.id}">Save Changes</button>
+            </div>
+          </div>`
+            : ''}
+        </div>`;}).join('')}
+      <div class="add-form">
+        <input id="ngr-emoji" class="f-emoji" placeholder="🍔" maxlength="2" />
+        <input id="ngr-name" class="f-wide" placeholder="Group reward name" />
+        <input id="ngr-bucks" class="f-sm" type="number" placeholder="Each" min="1" value="20" />
+        <button class="add-btn" id="add-grp-btn">Add</button>
+      </div>
+      ${
 
-      document.getElementById('admin-done').onclick = () => { adminMode = false; editingId = null; editingType = null; render(); };
-      document.getElementById('save-names').onclick = () => {
-        S.kids.forEach((_,i) => { const el = document.getElementById(`kname-${i}`); if (el && el.value.trim()) S.kids[i] = el.value.trim(); });
-        save(); showToast('Names saved'); render();
-      };
-      document.querySelectorAll('[data-del-act]').forEach(el => {
-        el.onclick = () => {
-          const id = +el.dataset.delAct;
-          S.activities = S.activities.filter(a => a.id !== id);
-          S.completed.counts.forEach(c => { if(c) delete c[id]; });
-          save(); render();
-        };
-      });
-      document.querySelectorAll('[data-edit-act]').forEach(el => {
-        el.onclick = () => {
-          const id = +el.dataset.editAct;
-          editingId = (editingId === id && editingType === 'activity') ? null : id;
-          editingType = 'activity';
-          render();
-        };
-      });
-      const saveEditAct = document.getElementById('save-edit-act');
-      if (saveEditAct) {
-        const eaRepeat = document.getElementById('ea-repeat');
-        eaRepeat.onclick = () => {
-          const on = eaRepeat.dataset.on === 'true';
-          eaRepeat.dataset.on = String(!on);
-          eaRepeat.classList.toggle('on', !on);
-        };
-        saveEditAct.onclick = () => {
-          const id = +saveEditAct.dataset.id;
-          const act = S.activities.find(a => a.id === id); if (!act) return;
-          const name = document.getElementById('ea-name').value.trim();
-          if (!name) return;
-          act.emoji = document.getElementById('ea-emoji').value.trim() || act.emoji;
-          act.name = name;
-          act.desc = document.getElementById('ea-desc').value.trim();
-          act.bucks = parseInt(document.getElementById('ea-bucks').value) || act.bucks;
-          act.repeatable = document.getElementById('ea-repeat').dataset.on === 'true';
-          editingId = null; editingType = null;
-          save(); showToast('Activity updated'); render();
-        };
-        document.getElementById('cancel-edit-act').onclick = () => { editingId = null; editingType = null; render(); };
-      }
-      document.querySelectorAll('[data-vis-act]').forEach(el => {
-        el.onclick = () => {
-          const actId = +el.dataset.visAct; const kidIdx = +el.dataset.visKid;
-          const act = S.activities.find(a => a.id === actId); if (!act) return;
-          if (!act.kidVis) act.kidVis = [true,true,true];
-          act.kidVis[kidIdx] = !act.kidVis[kidIdx];
-          save(); render();
-        };
-      });
-      document.querySelectorAll('[data-del-rew]').forEach(el => {
-        el.onclick = () => { S.rewards = S.rewards.filter(r => r.id !== +el.dataset.delRew); save(); render(); };
-      });
-      document.querySelectorAll('[data-edit-rew]').forEach(el => {
-        el.onclick = () => {
-          const id = +el.dataset.editRew;
-          editingId = (editingId === id && editingType === 'reward') ? null : id;
-          editingType = 'reward';
-          render();
-        };
-      });
-      const saveEditRew = document.getElementById('save-edit-rew');
-      if (saveEditRew) {
-        saveEditRew.onclick = () => {
-          const id = +saveEditRew.dataset.id;
-          const rew = S.rewards.find(r => r.id === id); if (!rew) return;
-          const name = document.getElementById('er-name').value.trim();
-          if (!name) return;
-          rew.emoji = document.getElementById('er-emoji').value.trim() || rew.emoji;
-          rew.name = name;
-          rew.bucks = parseInt(document.getElementById('er-bucks').value) || rew.bucks;
-          editingId = null; editingType = null;
-          save(); showToast('Reward updated'); render();
-        };
-        document.getElementById('cancel-edit-rew').onclick = () => { editingId = null; editingType = null; render(); };
-      }
-      document.querySelectorAll('[data-reset-bal]').forEach(el => {
-        el.onclick = () => { S.balances[+el.dataset.resetBal] = 0; save(); showToast('Balance reset to 0'); render(); };
-      });
-      document.querySelectorAll('[data-save-bal]').forEach(el => {
-        el.onclick = () => {
-          const i = +el.dataset.saveBal;
-          const val = parseInt(document.getElementById(`bal-input-${i}`).value);
-          if (isNaN(val) || val < 0) return;
-          S.balances[i] = val;
-          save(); showToast(`${S.kids[i]}'s balance updated`); render();
-        };
-      });
-        if (!confirm('Reset all activity counts for today?')) return;
-        S.completed = {date: todayStr(), counts: [{},{},{}]};
-        save(); showToast('Activity counts reset'); render();
-      };
-      document.getElementById('reset-bucks').onclick = () => {
-        if (!confirm('Reset ALL buck balances to zero?')) return;
-        S.balances = [0,0,0];
-        save(); showToast('All balances reset'); render();
-      };
-      document.getElementById('reset-history').onclick = () => {
-        if (!confirm('Clear all redemption history?')) return;
-        S.history = [];
-        save(); showToast('History cleared'); render();
-      };
 
-      // Group rewards
-      document.querySelectorAll('[data-del-grp]').forEach(el => {
-        el.onclick = () => { S.groupRewards = S.groupRewards.filter(g => g.id !== +el.dataset.delGrp); save(); render(); };
-      });
-      document.querySelectorAll('[data-edit-grp]').forEach(el => {
-        el.onclick = () => {
-          const id = +el.dataset.editGrp;
-          editingId = (editingId === id && editingType === 'group') ? null : id;
-          editingType = 'group'; render();
+
+
+
+        (S.groupRewards || []).some(g => (g.contributions || []).some(c => c)) ? `<button class="danger-btn" id="reset-group-contrib" style="margin-top:8px">↺ Reset Group Reward Contributions</button>` : ''}
+    </div>
+
+    <div class="admin-section">
+      <h3>Buck Balances</h3>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">Edit a kid's balance directly, then hit Save.</p>
+      ${
+
+
+
+
+        S.kids.map((k, i) => `
+        <div class="admin-row" style="gap:10px;">
+          <span class="admin-row-emoji">💵</span>
+          <span class="admin-row-name">${
+
+        k}</span>
+          <input id="bal-input-${i}" type="number" min="0" value="${S.balances[i]}"
+            style="width:72px;border:1px solid var(--border2);border-radius:5px;padding:5px 8px;font-family:'Inter',sans-serif;font-size:13px;background:var(--bg);color:var(--text);" />
+          <button class="save-btn" data-save-bal="${
+        i}" style="padding:5px 12px;">Save</button>
+        </div>`).join('')}
+    </div>
+
+    <div class="admin-section">
+      <h3>Resets</h3>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5">Each button resets that data for all kids. Activity counts also reset automatically every night.</p>
+      <button class="danger-btn" id="reset-activities">↺ Reset Today's Activity Counts</button>
+      <button class="danger-btn" id="reset-bucks" style="margin-top:8px">↺ Reset All Buck Balances to Zero</button>
+      <button class="danger-btn" id="reset-history" style="margin-top:8px">↺ Reset Redemption History</button>
+    </div>`
+
+
+
+
+
+
+
+
+        ;
+
+        app.innerHTML = html;
+
+        document.getElementById('admin-done').onclick = () => {
+            adminMode = false;
+            editingId = null;
+            editingType = null;
+            render();
         };
-      });
-      const saveEditGrp = document.getElementById('save-edit-grp');
-      if (saveEditGrp) {
-        saveEditGrp.onclick = () => {
-          const id = +saveEditGrp.dataset.id;
-          const gr = S.groupRewards.find(g => g.id === id); if (!gr) return;
-          const name = document.getElementById('egr-name').value.trim(); if (!name) return;
-          gr.emoji = document.getElementById('egr-emoji').value.trim() || gr.emoji;
-          gr.name = name;
-          gr.bucks = parseInt(document.getElementById('egr-bucks').value) || gr.bucks;
-          editingId = null; editingType = null;
-          save(); showToast('Group reward updated'); render();
+        document.getElementById('save-names').onclick = () => {
+            S.kids.forEach((_, i) => {
+                const el = document.getElementById(`kname-${i}`);
+                if (el && el.value.trim())
+                    S.kids[i] = el.value.trim();
+            });
+            save();
+            showToast('Names saved');
+            render();
         };
-        document.getElementById('cancel-edit-grp').onclick = () => { editingId = null; editingType = null; render(); };
-      }
-      const addGrpBtn = document.getElementById('add-grp-btn');
-      if (addGrpBtn) {
-        addGrpBtn.onclick = () => {
-          const name = document.getElementById('ngr-name').value.trim(); if (!name) return;
-          const bucks = parseInt(document.getElementById('ngr-bucks').value) || 20;
-          const emoji = document.getElementById('ngr-emoji').value.trim() || '🎯';
-          S.lastId++;
-          if (!S.groupRewards) S.groupRewards = [];
-          S.groupRewards.push({ id: S.lastId, name, bucks, emoji, contributions: [false,false,false] });
-          save(); render();
+        document.querySelectorAll('[data-del-act]').forEach(el => {
+            el.onclick = () => {
+                const id = +el.dataset.delAct;
+                S.activities = S.activities.filter(a => a.id !== id);
+                S.completed.counts.forEach(c => {
+                    if (c)
+                        delete c[id];
+                });
+                save();
+                render();
+            };
+        });
+        document.querySelectorAll('[data-edit-act]').forEach(el => {
+            el.onclick = () => {
+                const id = +el.dataset.editAct;
+                editingId = (editingId === id && editingType === 'activity') ? null : id;
+                editingType = 'activity';
+                render();
+            };
+        });
+        const saveEditAct = document.getElementById('save-edit-act');
+        if (saveEditAct) {
+            const eaRepeat = document.getElementById('ea-repeat');
+            eaRepeat.onclick = () => {
+                const on = eaRepeat.dataset.on === 'true';
+                eaRepeat.dataset.on = String(!on);
+                eaRepeat.classList.toggle('on', !on);
+            };
+            saveEditAct.onclick = () => {
+                const id = +saveEditAct.dataset.id;
+                const act = S.activities.find(a => a.id === id);
+                if (!act)
+                    return;
+                const name = document.getElementById('ea-name').value.trim();
+                if (!name)
+                    return;
+                act.emoji = document.getElementById('ea-emoji').value.trim() || act.emoji;
+                act.name = name;
+                act.desc = document.getElementById('ea-desc').value.trim();
+                act.bucks = parseInt(document.getElementById('ea-bucks').value) || act.bucks;
+                act.repeatable = document.getElementById('ea-repeat').dataset.on === 'true';
+                editingId = null;
+                editingType = null;
+                save();
+                showToast('Activity updated');
+                render();
+            };
+            document.getElementById('cancel-edit-act').onclick = () => {
+                editingId = null;
+                editingType = null;
+                render();
+            };
+        }
+        document.querySelectorAll('[data-vis-act]').forEach(el => {
+            el.onclick = () => {
+                const actId = +el.dataset.visAct;
+                const kidIdx = +el.dataset.visKid;
+                const act = S.activities.find(a => a.id === actId);
+                if (!act)
+                    return;
+                if (!act.kidVis)
+                    act.kidVis = [true, true, true];
+                act.kidVis[kidIdx] = !act.kidVis[kidIdx];
+                save();
+                render();
+            };
+        });
+        document.querySelectorAll('[data-del-rew]').forEach(el => {
+            el.onclick = () => {
+                S.rewards = S.rewards.filter(r => r.id !== +el.dataset.delRew);
+                save();
+                render();
+            };
+        });
+        document.querySelectorAll('[data-edit-rew]').forEach(el => {
+            el.onclick = () => {
+                const id = +el.dataset.editRew;
+                editingId = (editingId === id && editingType === 'reward') ? null : id;
+                editingType = 'reward';
+                render();
+            };
+        });
+        const saveEditRew = document.getElementById('save-edit-rew');
+        if (saveEditRew) {
+            saveEditRew.onclick = () => {
+                const id = +saveEditRew.dataset.id;
+                const rew = S.rewards.find(r => r.id === id);
+                if (!rew)
+                    return;
+                const name = document.getElementById('er-name').value.trim();
+                if (!name)
+                    return;
+                rew.emoji = document.getElementById('er-emoji').value.trim() || rew.emoji;
+                rew.name = name;
+                rew.bucks = parseInt(document.getElementById('er-bucks').value) || rew.bucks;
+                editingId = null;
+                editingType = null;
+                save();
+                showToast('Reward updated');
+                render();
+            };
+            document.getElementById('cancel-edit-rew').onclick = () => {
+                editingId = null;
+                editingType = null;
+                render();
+            };
+        }
+        document.querySelectorAll('[data-save-bal]').forEach(el => {
+            el.onclick = () => {
+                const i = +el.dataset.saveBal;
+                const val = parseInt(document.getElementById(`bal-input-${i}`).value);
+                if (isNaN(val) || val < 0)
+                    return;
+                S.balances[i] = val;
+                save();
+                showToast(`${S.kids[i]}'s balance updated`);
+                render();
+            };
+        });
+        document.getElementById('reset-activities').onclick = () => {
+            if (!confirm('Reset all activity counts for today?'))
+                return;
+            S.completed = {
+                date: todayStr(),
+                counts: [{}, {}, {}]
+            };
+            save();
+            showToast('Activity counts reset');
+            render();
         };
-      }
-      const resetGrpBtn = document.getElementById('reset-group-contrib');
-      if (resetGrpBtn) {
-        resetGrpBtn.onclick = () => {
-          if (!confirm('Reset all group reward contributions? Kids will get their Bucks refunded.')) return;
-          S.groupRewards.forEach(gr => {
-            if (!gr.contributions) return;
-            gr.contributions.forEach((c, i) => { if (c) { S.balances[i] += gr.bucks; } });
-            gr.contributions = [false,false,false];
-          });
-          save(); showToast('Group contributions reset + refunded'); render();
+        document.getElementById('reset-bucks').onclick = () => {
+            if (!confirm('Reset ALL buck balances to zero?'))
+                return;
+            S.balances = [0, 0, 0];
+            save();
+            showToast('All balances reset');
+            render();
         };
-      }
-      const repeatToggle = document.getElementById('na-repeat');
-      repeatToggle.onclick = () => {
-        const on = repeatToggle.dataset.on === 'true';
-        repeatToggle.dataset.on = String(!on);
-        repeatToggle.classList.toggle('on', !on);
-      };
-      document.getElementById('add-act-btn').onclick = () => {
-        const name = document.getElementById('na-name').value.trim();
-        const bucks = parseInt(document.getElementById('na-bucks').value) || 5;
-        const desc = document.getElementById('na-desc').value.trim();
-        const emoji = document.getElementById('na-emoji').value.trim() || '⭐';
-        const repeatable = document.getElementById('na-repeat').dataset.on === 'true';
-        if (!name) return;
-        S.lastId++;
-        S.activities.push({id: S.lastId, name, desc, bucks, emoji, repeatable, kidVis:[true,true,true]});
-        save(); render();
-      };
-      document.getElementById('add-rew-btn').onclick = () => {
-        const name = document.getElementById('nr-name').value.trim();
-        const bucks = parseInt(document.getElementById('nr-bucks').value) || 10;
-        const emoji = document.getElementById('nr-emoji').value.trim() || '🎁';
-        if (!name) return;
-        S.lastId++; S.rewards.push({id: S.lastId, name, bucks, emoji});
-        save(); render();
-      };
+        document.getElementById('reset-history').onclick = () => {
+            if (!confirm('Clear all redemption history?'))
+                return;
+            S.history = [];
+            save();
+            showToast('History cleared');
+            render();
+        };
+
+        // Group rewards
+        document.querySelectorAll('[data-del-grp]').forEach(el => {
+            el.onclick = () => {
+                S.groupRewards = S.groupRewards.filter(g => g.id !== +el.dataset.delGrp);
+                save();
+                render();
+            };
+        });
+        document.querySelectorAll('[data-edit-grp]').forEach(el => {
+            el.onclick = () => {
+                const id = +el.dataset.editGrp;
+                editingId = (editingId === id && editingType === 'group') ? null : id;
+                editingType = 'group';
+                render();
+            };
+        });
+        const saveEditGrp = document.getElementById('save-edit-grp');
+        if (saveEditGrp) {
+            saveEditGrp.onclick = () => {
+                const id = +saveEditGrp.dataset.id;
+                const gr = S.groupRewards.find(g => g.id === id);
+                if (!gr)
+                    return;
+                const name = document.getElementById('egr-name').value.trim();
+                if (!name)
+                    return;
+                gr.emoji = document.getElementById('egr-emoji').value.trim() || gr.emoji;
+                gr.name = name;
+                gr.bucks = parseInt(document.getElementById('egr-bucks').value) || gr.bucks;
+                editingId = null;
+                editingType = null;
+                save();
+                showToast('Group reward updated');
+                render();
+            };
+            document.getElementById('cancel-edit-grp').onclick = () => {
+                editingId = null;
+                editingType = null;
+                render();
+            };
+        }
+        const addGrpBtn = document.getElementById('add-grp-btn');
+        if (addGrpBtn) {
+            addGrpBtn.onclick = () => {
+                const name = document.getElementById('ngr-name').value.trim();
+                if (!name)
+                    return;
+                const bucks = parseInt(document.getElementById('ngr-bucks').value) || 20;
+                const emoji = document.getElementById('ngr-emoji').value.trim() || '🎯';
+                S.lastId++;
+                if (!S.groupRewards)
+                    S.groupRewards = [];
+                S.groupRewards.push({
+                    id: S.lastId,
+                    name,
+                    bucks,
+                    emoji,
+                    contributions: [false, false, false]
+                });
+                save();
+                render();
+            };
+        }
+        const resetGrpBtn = document.getElementById('reset-group-contrib');
+        if (resetGrpBtn) {
+            resetGrpBtn.onclick = () => {
+                if (!confirm('Reset all group reward contributions? Kids will get their Bucks refunded.'))
+                    return;
+                S.groupRewards.forEach(gr => {
+                    if (!gr.contributions)
+                        return;
+                    gr.contributions.forEach((c, i) => {
+                        if (c) {
+                            S.balances[i] += gr.bucks;
+                        }
+                    });
+                    gr.contributions = [false, false, false];
+                });
+                save();
+                showToast('Group contributions reset + refunded');
+                render();
+            };
+        }
+        const repeatToggle = document.getElementById('na-repeat');
+        repeatToggle.onclick = () => {
+            const on = repeatToggle.dataset.on === 'true';
+            repeatToggle.dataset.on = String(!on);
+            repeatToggle.classList.toggle('on', !on);
+        };
+        document.getElementById('add-act-btn').onclick = () => {
+            const name = document.getElementById('na-name').value.trim();
+            const bucks = parseInt(document.getElementById('na-bucks').value) || 5;
+            const desc = document.getElementById('na-desc').value.trim();
+            const emoji = document.getElementById('na-emoji').value.trim() || '⭐';
+            const repeatable = document.getElementById('na-repeat').dataset.on === 'true';
+            if (!name)
+                return;
+            S.lastId++;
+            S.activities.push({
+                id: S.lastId,
+                name,
+                desc,
+                bucks,
+                emoji,
+                repeatable,
+                kidVis: [true, true, true]
+            });
+            save();
+            render();
+        };
+        document.getElementById('add-rew-btn').onclick = () => {
+            const name = document.getElementById('nr-name').value.trim();
+            const bucks = parseInt(document.getElementById('nr-bucks').value) || 10;
+            const emoji = document.getElementById('nr-emoji').value.trim() || '🎁';
+            if (!name)
+                return;
+            S.lastId++;
+            S.rewards.push({
+                id: S.lastId,
+                name,
+                bucks,
+                emoji
+            });
+            save();
+            render();
+        };
     }
 
     const CORRECT_PIN = '1891';
@@ -2033,49 +2506,76 @@
     let pinOverlay = null;
 
     function showPinPad() {
-      pinEntry = '';
-      pinOverlay = document.createElement('div');
-      pinOverlay.className = 'pin-overlay';
-      document.body.appendChild(pinOverlay);
-      renderPinPad('');
+        pinEntry = '';
+        pinOverlay = document.createElement('div');
+        pinOverlay.className = 'pin-overlay';
+        document.body.appendChild(pinOverlay);
+        renderPinPad('');
     }
 
     function renderPinPad(errorMsg) {
-      pinOverlay.innerHTML = `
-        <div class="pin-box">
-          <div class="pin-title">Parent Access</div>
-          <div class="pin-sub">Enter your PIN to continue</div>
-          <div class="pin-dots">
-            ${[0,1,2,3].map(i => `<div class="pin-dot${pinEntry.length > i ? (errorMsg ? ' error' : ' filled') : ''}"></div>`).join('')}
-          </div>
-          <div class="pin-error-msg">${errorMsg || ''}</div>
-          <div class="pin-grid">
-            ${[1,2,3,4,5,6,7,8,9].map(n => `<button class="pin-key" data-digit="${n}">${n}</button>`).join('')}
-            <div></div>
-            <button class="pin-key" data-digit="0">0</button>
-            <button class="pin-key del" data-del>⌫</button>
-          </div>
-          <button class="pin-cancel" id="pin-cancel-btn">Cancel</button>
-        </div>`;
+        pinOverlay.innerHTML = `
+    <div class="pin-box">
+      <div class="pin-title">Parent Access</div>
+      <div class="pin-sub">Enter your PIN to continue</div>
+      <div class="pin-dots">
+        ${
 
-      pinOverlay.querySelectorAll('[data-digit]').forEach(btn => {
-        btn.onclick = () => {
-          if (pinEntry.length >= 4) return;
-          pinEntry += btn.dataset.digit;
-          if (pinEntry.length === 4) {
-            if (pinEntry === CORRECT_PIN) {
-              pinOverlay.remove(); pinOverlay = null;
-              adminMode = true; render();
-            } else {
-              renderPinPad('Incorrect PIN — try again');
-              setTimeout(() => { pinEntry = ''; renderPinPad(''); }, 1200);
-            }
-          } else { renderPinPad(''); }
+
+
+        [0, 1, 2, 3].map(i => `<div class="pin-dot${pinEntry.length > i ? (errorMsg ? ' error' : ' filled') : ''}"></div>`).join('')}
+      </div>
+      <div class="pin-error-msg">${
+        errorMsg || ''}</div>
+      <div class="pin-grid">
+        ${
+        [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button class="pin-key" data-digit="${n}">${n}</button>`).join('')}
+        <div></div>
+        <button class="pin-key" data-digit="0">0</button>
+        <button class="pin-key del" data-del>⌫</button>
+      </div>
+      <button class="pin-cancel" id="pin-cancel-btn">Cancel</button>
+    </div>`
+
+
+
+
+
+        ;
+
+        pinOverlay.querySelectorAll('[data-digit]').forEach(btn => {
+            btn.onclick = () => {
+                if (pinEntry.length >= 4)
+                    return;
+                pinEntry += btn.dataset.digit;
+                if (pinEntry.length === 4) {
+                    if (pinEntry === CORRECT_PIN) {
+                        pinOverlay.remove();
+                        pinOverlay = null;
+                        adminMode = true;
+                        render();
+                    } else {
+                        renderPinPad('Incorrect PIN — try again');
+                        setTimeout(() => {
+                            pinEntry = '';
+                            renderPinPad('');
+                        }, 1200);
+                    }
+                } else {
+                    renderPinPad('');
+                }
+            };
+        });
+        const delBtn = pinOverlay.querySelector('[data-del]');
+        if (delBtn)
+            delBtn.onclick = () => {
+                pinEntry = pinEntry.slice(0, -1);
+                renderPinPad('');
+            };
+        document.getElementById('pin-cancel-btn').onclick = () => {
+            pinOverlay.remove();
+            pinOverlay = null;
         };
-      });
-      const delBtn = pinOverlay.querySelector('[data-del]');
-      if (delBtn) delBtn.onclick = () => { pinEntry = pinEntry.slice(0,-1); renderPinPad(''); };
-      document.getElementById('pin-cancel-btn').onclick = () => { pinOverlay.remove(); pinOverlay = null; };
     }
 
     load();
