@@ -642,7 +642,44 @@
         letter-spacing: 1px;
         margin-top: 6px;
         text-align: center;
-    }/* CONFIRM MODAL */
+    }/* ACTIVITY LOG */
+
+    .log-day {
+        margin-bottom: 18px;
+    }
+
+    .log-entry {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 14px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        margin-bottom: 5px;
+    }
+
+    .log-entry-emoji {
+        font-size: 16px;
+    }
+
+    .log-entry-name {
+        flex: 1;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .log-entry-count {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 16px;
+        color: var(--muted);
+        letter-spacing: 1px;
+    }
+
+    .log-entry-count.multi {
+        color: var(--accent);
+    }
 
     .modal-overlay {
         position: fixed;
@@ -1453,6 +1490,7 @@
         },
         history: [],
         groupRewards: [],
+        activityLog: [],
         lastId: 100,
     };
 
@@ -1465,16 +1503,11 @@
     let editingType = null;
 
     document.getElementById('app').innerHTML = `
-  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:14px;">
-    <div style="font-size:44px">☀️</div>
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:#E8B84B;letter-spacing:3px">ODOM SUMMER STORE</div>
-    <div style="font-size:11px;color:#7C82A0;font-weight:700;text-transform:uppercase;letter-spacing:1.5px">Connecting...</div>
-  </div>`
-
-
-
-
-    ;
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:14px;">
+        <div style="font-size:44px">☀️</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:#E8B84B;letter-spacing:3px">ODOM SUMMER STORE</div>
+        <div style="font-size:11px;color:#7C82A0;font-weight:700;text-transform:uppercase;letter-spacing:1.5px">Connecting...</div>
+      </div>`;
 
     function load() {
         onValue(dataRef, (snapshot) => {
@@ -1503,7 +1536,24 @@
                     S.groupRewards = [];
                 else if (!Array.isArray(S.groupRewards))
                     S.groupRewards = Object.values(S.groupRewards);
+                if (!S.activityLog)
+                    S.activityLog = [];
+                else if (!Array.isArray(S.activityLog))
+                    S.activityLog = Object.values(S.activityLog);
                 if (!S.completed || S.completed.date !== todayStr()) {
+                    // Archive today's counts before resetting
+                    if (S.completed && S.completed.date && S.completed.counts) {
+                        const counts = Array.isArray(S.completed.counts)
+                        ? S.completed.counts
+                        : Object.values(S.completed.counts);
+                        const hasAny = counts.some(c => c && Object.keys(c).length > 0);
+                        if (hasAny) {
+                            S.activityLog.unshift({
+                                date: S.completed.date,
+                                counts
+                            });
+                        }
+                    }
                     S.completed = {
                         date: todayStr(),
                         counts: [{}, {}, {}]
@@ -1673,20 +1723,15 @@
         overlay.className = 'modal-overlay';
         const isGroup = confirmReward._isGroup;
         overlay.innerHTML = `
-    <div class="modal-box">
-      <div class="modal-emoji">${
-        confirmReward.emoji}</div>
-      <div class="modal-title">${isGroup ? 'Contribute to' : 'Redeem'} ${confirmReward.name}?</div>
-      <div class="modal-sub">${isGroup ? `Contributes ${confirmReward.bucks} Bucks from ${S.kids[currentKid]}'s balance toward this group reward` : `Costs ${confirmReward.bucks} Bucks from ${S.kids[currentKid]}'s balance`}</div>
-      <div class="modal-btns">
-        <button class="mbtn mbtn-no" id="modal-cancel">Cancel</button>
-        <button class="mbtn mbtn-yes" id="modal-yes">${
-
-        isGroup ? 'Contribute!' : 'Yes, Redeem!'}</button>
-      </div>
-    </div>`
-
-        ;
+            <div class="modal-box">
+              <div class="modal-emoji">${confirmReward.emoji}</div>
+              <div class="modal-title">${isGroup ? 'Contribute to' : 'Redeem'} ${confirmReward.name}?</div>
+              <div class="modal-sub">${isGroup ? `Contributes ${confirmReward.bucks} Bucks from ${S.kids[currentKid]}'s balance toward this group reward` : `Costs ${confirmReward.bucks} Bucks from ${S.kids[currentKid]}'s balance`}</div>
+              <div class="modal-btns">
+                <button class="mbtn mbtn-no" id="modal-cancel">Cancel</button>
+                <button class="mbtn mbtn-yes" id="modal-yes">${isGroup ? 'Contribute!' : 'Yes, Redeem!'}</button>
+              </div>
+            </div>`;
         document.getElementById('app').appendChild(overlay);
         document.getElementById('modal-cancel').onclick = cancelBuy;
         document.getElementById('modal-yes').onclick = isGroup ? confirmGroupContribute : confirmBuy;
@@ -1701,41 +1746,27 @@
         const balance = S.balances[currentKid] || 0;
 
         let html = `
-    <div class="top-bar">
-      <h1>☀️ Odom Summer Store</h1>
-      <button class="admin-btn" id="admin-toggle">⚙️ Parent</button>
-    </div>
-    <div class="kid-tabs">
-      ${
-
-
-
-
-        S.kids.map((k, i) => `<div class="kid-tab k${i}${currentKid === i ? ' active' : ''}" data-kid="${i}">${k}</div>`).join('')}
-    </div>
-    <div class="balance-card k${
-        currentKid}">
-      <div>
-        <div class="bal-label">${
-        S.kids[currentKid]}'s Balance</div>
-        <div class="bal-amount">${balance}</div>
-        <div class="bal-unit">Bucks</div>
-      </div>
-      <div class="bal-icon">💵</div>
-    </div>
-    <div class="nav-tabs">
-      <div class="nav-tab${
-
-
-
-
-        currentTab === 'earn' ? ' active' : ''}" data-tab="earn">★ Earn</div>
-      <div class="nav-tab${currentTab === 'shop' ? ' active' : ''}" data-tab="shop">Shop</div>
-      <div class="nav-tab${currentTab === 'history' ? ' active' : ''}" data-tab="history">History</div>
-    </div>
-    <div class="content">`
-
-        ;
+            <div class="top-bar">
+              <h1>☀️ Odom Summer Store</h1>
+              <button class="admin-btn" id="admin-toggle">⚙️ Parent</button>
+            </div>
+            <div class="kid-tabs">
+              ${S.kids.map((k, i) => `<div class="kid-tab k${i}${currentKid === i ? ' active' : ''}" data-kid="${i}">${k}</div>`).join('')}
+            </div>
+            <div class="balance-card k${currentKid}">
+              <div>
+                <div class="bal-label">${S.kids[currentKid]}'s Balance</div>
+                <div class="bal-amount">${balance}</div>
+                <div class="bal-unit">Bucks</div>
+              </div>
+              <div class="bal-icon">💵</div>
+            </div>
+            <div class="nav-tabs">
+              <div class="nav-tab${currentTab === 'earn' ? ' active' : ''}" data-tab="earn">★ Earn</div>
+              <div class="nav-tab${currentTab === 'shop' ? ' active' : ''}" data-tab="shop">Shop</div>
+              <div class="nav-tab${currentTab === 'history' ? ' active' : ''}" data-tab="history">History</div>
+            </div>
+            <div class="content">`;
 
         if (currentTab === 'earn') {
             html += `<div class="section-label">Today's Activities</div><div class="activity-list">`;
@@ -1748,61 +1779,41 @@
                 if (act.repeatable) {
                     const atMax = count >= 3;
                     html += `
-          <div class="activity-item${done ? ' done' : ''}">
-            <div class="act-left">
-              <span class="act-emoji">${
-                    act.emoji}</span>
-              <div class="act-info">
-                <div class="act-name">${
-                    act.name}</div>
-                ${act.desc ? `<div class="act-desc">${act.desc} · repeatable</div>` : ''}
-              </div>
-            </div>
-            <div class="act-right">
-              <span class="act-bucks">+${
-
-
-                    act.bucks} 💵</span>
-              <div class="counter">
-                <span class="counter-val">${
-                    count}</span>
-                <button class="counter-btn plus" data-inc="${act.id}" ${atMax ? 'disabled style="opacity:0.25;cursor:not-allowed"' : ''}>+</button>
-              </div>
-            </div>
-          </div>`
-
-
-                    ;
+                              <div class="activity-item${done ? ' done' : ''}">
+                                <div class="act-left">
+                                  <span class="act-emoji">${act.emoji}</span>
+                                  <div class="act-info">
+                                    <div class="act-name">${act.name}</div>
+                                    ${act.desc ? `<div class="act-desc">${act.desc} · repeatable</div>` : ''}
+                                  </div>
+                                </div>
+                                <div class="act-right">
+                                  <span class="act-bucks">+${act.bucks} 💵</span>
+                                  <div class="counter">
+                                    <span class="counter-val">${count}</span>
+                                    <button class="counter-btn plus" data-inc="${act.id}" ${atMax ? 'disabled style="opacity:0.25;cursor:not-allowed"' : ''}>+</button>
+                                  </div>
+                                </div>
+                              </div>`;
                 } else {
                     html += `
-          <div class="activity-item${done ? ' done' : ''}" ${!done ? `data-check="${act.id}" style="cursor:pointer"` : 'style="cursor:default"'}>
-            <div class="act-left">
-              <span class="act-emoji">${
-                    act.emoji}</span>
-              <div class="act-info">
-                <div class="act-name">${
-                    act.name}</div>
-                ${act.desc ? `<div class="act-desc">${act.desc}</div>` : ''}
-              </div>
-            </div>
-            <div class="act-right">
-              <span class="act-bucks">+${
-
-
-                    act.bucks} 💵</span>
-              <div class="check-circle${done ? ' checked' : ''}${!done ? ` data-check="${act.id}"` : ''}">
-                <svg width="14" height="11" viewBox="0 0 14 11" fill="none">
-                  <path d="M1 5L5.5 9.5L13 1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </div>
-            </div>
-          </div>`
-
-
-
-
-
-                    ;
+                              <div class="activity-item${done ? ' done' : ''}" ${!done ? `data-check="${act.id}" style="cursor:pointer"` : 'style="cursor:default"'}>
+                                <div class="act-left">
+                                  <span class="act-emoji">${act.emoji}</span>
+                                  <div class="act-info">
+                                    <div class="act-name">${act.name}</div>
+                                    ${act.desc ? `<div class="act-desc">${act.desc}</div>` : ''}
+                                  </div>
+                                </div>
+                                <div class="act-right">
+                                  <span class="act-bucks">+${act.bucks} 💵</span>
+                                  <div class="check-circle${done ? ' checked' : ''}${!done ? ` data-check="${act.id}"` : ''}">
+                                    <svg width="14" height="11" viewBox="0 0 14 11" fill="none">
+                                      <path d="M1 5L5.5 9.5L13 1" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                  </div>
+                                </div>
+                              </div>`;
                 }
             });
             html += `</div>`;
@@ -1815,12 +1826,11 @@
             sortedRewards.forEach(rew => {
                 const can = balance >= rew.bucks;
                 html += `
-        <div class="shop-item${can ? '' : ' cant-afford'}" data-buy="${rew.id}">
-          <div class="shop-emoji">${rew.emoji}</div>
-          <div class="shop-name">${rew.name}</div>
-          <div class="shop-cost">${rew.bucks} 💵</div>
-        </div>`
-                ;
+                        <div class="shop-item${can ? '' : ' cant-afford'}" data-buy="${rew.id}">
+                          <div class="shop-emoji">${rew.emoji}</div>
+                          <div class="shop-name">${rew.name}</div>
+                          <div class="shop-cost">${rew.bucks} 💵</div>
+                        </div>`;
             });
             html += `</div>`;
 
@@ -1835,40 +1845,31 @@
                     const canAfford = balance >= gr.bucks;
                     const btnDisabled = myContributed || !canAfford;
                     html += `
-          <div class="group-item${allDone ? ' fully-funded' : ''}${!myContributed && !canAfford ? ' cant-afford' : ''}" style="${!myContributed && !canAfford ? 'opacity:0.28' : ''}">
-            <div class="group-item-top">
-              <span class="group-item-emoji">${
-                    gr.emoji}</span>
-              <div class="group-item-info">
-                <div class="group-item-name">${
-                    gr.name}</div>
-                <div class="group-item-cost">${gr.bucks} 💵 each</div>
-              </div>
-              <button class="group-contribute-btn${
-                    myContributed ? ' contributed' : ''}"
-                data-contribute="${gr.id}" ${btnDisabled ? 'disabled' : ''}>
-                ${myContributed ? '✓ Done' : 'Contribute'}
-              </button>
-            </div>
-            <div class="group-progress">
-              ${
-
-
-                    S.kids.map((_, i) => `<div class="group-progress-seg${contribs[i] ? ' filled k' + i : ''}"></div>`).join('')}
-            </div>
-            <div class="group-progress-labels">
-              ${
-
-                    S.kids.map((k, i) => `<div class="group-progress-label${contribs[i] ? ' filled k' + i : ''}">${k}</div>`).join('')}
-            </div>
-            ${
-                    allDone ? `<div class="group-complete-badge">✓ Unlocked!</div>` : ''}
-          </div>`
-                    ;
+                              <div class="group-item${allDone ? ' fully-funded' : ''}${!myContributed && !canAfford ? ' cant-afford' : ''}" style="${!myContributed && !canAfford ? 'opacity:0.28' : ''}">
+                                <div class="group-item-top">
+                                  <span class="group-item-emoji">${gr.emoji}</span>
+                                  <div class="group-item-info">
+                                    <div class="group-item-name">${gr.name}</div>
+                                    <div class="group-item-cost">${gr.bucks} 💵 each</div>
+                                  </div>
+                                  <button class="group-contribute-btn${myContributed ? ' contributed' : ''}"
+                                    data-contribute="${gr.id}" ${btnDisabled ? 'disabled' : ''}>
+                                    ${myContributed ? '✓ Done' : 'Contribute'}
+                                  </button>
+                                </div>
+                                <div class="group-progress">
+                                  ${S.kids.map((_, i) => `<div class="group-progress-seg${contribs[i] ? ' filled k' + i : ''}"></div>`).join('')}
+                                </div>
+                                <div class="group-progress-labels">
+                                  ${S.kids.map((k, i) => `<div class="group-progress-label${contribs[i] ? ' filled k' + i : ''}">${k}</div>`).join('')}
+                                </div>
+                                ${allDone ? `<div class="group-complete-badge">✓ Unlocked!</div>` : ''}
+                              </div>`;
                 });
             }
 
         } else {
+            // --- Redemption History ---
             html += `<div class="section-label">Redemption History</div>`;
             const kidHistory = S.history.filter(h => h.kidIdx === currentKid || h.isGroup);
             if (kidHistory.length === 0) {
@@ -1884,18 +1885,56 @@
                     html += `<div class="history-day"><div class="history-date">${formatDate(date)}</div>`;
                     byDate[date].forEach(h => {
                         html += `
-            <div class="history-entry">
-              <span class="history-entry-emoji">${
-                        h.rewardEmoji}</span>
-              <div class="history-entry-info">
-                <div class="history-entry-name">${
-                        h.rewardName}${h.isGroup ? ' <span style="font-size:10px;color:var(--muted);font-weight:600">· Group</span>' : ''}</div>
-                <div class="history-time">${h.time || ''}</div>
-              </div>
-              <span class="history-cost">${
-                        h.isGroup ? h.cost / 3 : h.cost} 💵</span>
-            </div>`
-                        ;
+                                    <div class="history-entry">
+                                      <span class="history-entry-emoji">${h.rewardEmoji}</span>
+                                      <div class="history-entry-info">
+                                        <div class="history-entry-name">${h.rewardName}${h.isGroup ? ' <span style="font-size:10px;color:var(--muted);font-weight:600">· Group</span>' : ''}</div>
+                                        <div class="history-time">${h.time || ''}</div>
+                                      </div>
+                                      <span class="history-cost">${h.isGroup ? h.cost / 3 : h.cost} 💵</span>
+                                    </div>`;
+                    });
+                    html += `</div>`;
+                });
+            }
+
+            // --- Activity Log ---
+            html += `<div class="section-label" style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">Activity Log</div>`;
+
+            // Include today's current counts as the first entry
+            const todayCounts = S.completed && S.completed.counts ? S.completed.counts : [{}, {}, {}];
+            const todayNormalized = Array.isArray(todayCounts) ? todayCounts : Object.values(todayCounts);
+            const allLogDays = [];
+            const todayHasAny = todayNormalized.some(c => c && Object.keys(c).length > 0);
+            if (todayHasAny)
+                allLogDays.push({
+                    date: todayStr(),
+                    counts: todayNormalized,
+                    isToday: true
+                });
+            (S.activityLog || []).forEach(entry => allLogDays.push(entry));
+
+            if (allLogDays.length === 0) {
+                html += `<div class="empty">No activity data yet</div>`;
+            } else {
+                allLogDays.forEach(entry => {
+                    const counts = Array.isArray(entry.counts) ? entry.counts : Object.values(entry.counts);
+                    const kidCounts = counts[currentKid] || {};
+                    const actIds = Object.keys(kidCounts).filter(id => kidCounts[id] > 0);
+                    if (actIds.length === 0)
+                        return;
+                    html += `<div class="log-day"><div class="history-date">${formatDate(entry.date)}${entry.isToday ? ' <span style="font-size:9px;color:var(--accent);font-weight:800;letter-spacing:1px">TODAY</span>' : ''}</div>`;
+                    actIds.forEach(id => {
+                        const act = S.activities.find(a => a.id === +id);
+                        const count = kidCounts[id];
+                        const name = act ? act.name : `Activity #${id}`;
+                        const emoji = act ? act.emoji : '⭐';
+                        html += `
+                                    <div class="log-entry">
+                                      <span class="log-entry-emoji">${emoji}</span>
+                                      <span class="log-entry-name">${name}</span>
+                                      <span class="log-entry-count${count > 1 ? ' multi' : ''}">×${count}</span>
+                                    </div>`;
                     });
                     html += `</div>`;
                 });
@@ -1959,254 +1998,155 @@
     function renderAdmin() {
         const app = document.getElementById('app');
         let html = `
-    <div class="admin-bar">
-      <span>⚙️ Parent Settings</span>
-      <button class="done-btn" id="admin-done">Done</button>
-    </div>
-
-    <div class="admin-section">
-      <h3>Kid Names</h3>
-      <div class="kid-name-grid">
-        ${
-
-
-
-
-
-
-
-        S.kids.map((k, i) => `<div class="kid-name-row"><label>Kid ${i + 1}</label><input class="f-wide" id="kname-${i}" value="${k}" /></div>`).join('')}
-      </div>
-      <button class="save-btn" id="save-names">Save Names</button>
-    </div>
-
-    <div class="admin-section">
-      <h3>Activities</h3>
-      ${
-
-
-
-
-
-        S.activities.map(a => {const isEditing = editingId === a.id && editingType === 'activity';return `
-        <div class="admin-row admin-act-row">
-          <div class="admin-act-row-top">
-            <span class="admin-row-emoji">${
-
-            a.emoji}</span>
-            <span class="admin-row-name">${a.name}</span>
-            <span class="admin-row-meta">${a.bucks} 💵${a.repeatable ? ' · rep' : ''}</span>
-            <button class="edit-btn" data-edit-act="${a.id}" title="Edit">✎</button>
-            <button class="del-btn" data-del-act="${a.id}">×</button>
-          </div>
-          <div class="act-kid-toggles">
-            ${
-
-            S.kids.map((k, i) => {const on = !a.kidVis || a.kidVis[i] !== false;return `<button class="act-kid-toggle k${i}${on ? ' on' : ''}" data-vis-act="${a.id}" data-vis-kid="${i}">${k}</button>`;}).join('')}
-          </div>
-          ${
-            isEditing ? `
-          <div class="edit-form">
-            <div class="edit-form-row">
-              <input id="ea-emoji" class="ef-emoji" value="${
-
-            a.emoji}" maxlength="2" />
-              <input id="ea-name" class="ef-wide" value="${a.name}" placeholder="Activity name" />
+            <div class="admin-bar">
+              <span>⚙️ Parent Settings</span>
+              <button class="done-btn" id="admin-done">Done</button>
             </div>
-            <div class="edit-form-row">
-              <input id="ea-desc" class="ef-wide" value="${
 
-            a.desc || ''}" placeholder="Description (optional)" />
-              <input id="ea-bucks" class="ef-sm" type="number" value="${a.bucks}" min="1" />
+            <div class="admin-section">
+              <h3>Kid Names</h3>
+              <div class="kid-name-grid">
+                ${S.kids.map((k, i) => `<div class="kid-name-row"><label>Kid ${i + 1}</label><input class="f-wide" id="kname-${i}" value="${k}" /></div>`).join('')}
+              </div>
+              <button class="save-btn" id="save-names">Save Names</button>
             </div>
-            <div class="toggle-row">
-              <span class="toggle-label">Repeatable</span>
-              <button class="toggle${
 
-
-            a.repeatable ? ' on' : ''}" id="ea-repeat" data-on="${a.repeatable}"></button>
+            <div class="admin-section">
+              <h3>Activities</h3>
+              ${S.activities.map(a => {const isEditing = editingId === a.id && editingType === 'activity';return `
+                    <div class="admin-row admin-act-row">
+                      <div class="admin-act-row-top">
+                        <span class="admin-row-emoji">${a.emoji}</span>
+                        <span class="admin-row-name">${a.name}</span>
+                        <span class="admin-row-meta">${a.bucks} 💵${a.repeatable ? ' · rep' : ''}</span>
+                        <button class="edit-btn" data-edit-act="${a.id}" title="Edit">✎</button>
+                        <button class="del-btn" data-del-act="${a.id}">×</button>
+                      </div>
+                      <div class="act-kid-toggles">
+                        ${S.kids.map((k, i) => {const on = !a.kidVis || a.kidVis[i] !== false;return `<button class="act-kid-toggle k${i}${on ? ' on' : ''}" data-vis-act="${a.id}" data-vis-kid="${i}">${k}</button>`;}).join('')}
+                      </div>
+                      ${isEditing ? `
+                      <div class="edit-form">
+                        <div class="edit-form-row">
+                          <input id="ea-emoji" class="ef-emoji" value="${a.emoji}" maxlength="2" />
+                          <input id="ea-name" class="ef-wide" value="${a.name}" placeholder="Activity name" />
+                        </div>
+                        <div class="edit-form-row">
+                          <input id="ea-desc" class="ef-wide" value="${a.desc || ''}" placeholder="Description (optional)" />
+                          <input id="ea-bucks" class="ef-sm" type="number" value="${a.bucks}" min="1" />
+                        </div>
+                        <div class="toggle-row">
+                          <span class="toggle-label">Repeatable</span>
+                          <button class="toggle${a.repeatable ? ' on' : ''}" id="ea-repeat" data-on="${a.repeatable}"></button>
+                        </div>
+                        <div class="edit-form-actions">
+                          <button class="cancel-edit-btn" id="cancel-edit-act">Cancel</button>
+                          <button class="save-edit-btn" id="save-edit-act" data-id="${a.id}">Save Changes</button>
+                        </div>
+                      </div>` : ''}
+                    </div>`;}).join('')}
+              <div class="add-form">
+                <input id="na-emoji" class="f-emoji" placeholder="⭐" maxlength="2" />
+                <input id="na-name" class="f-wide" placeholder="Activity name" />
+                <input id="na-desc" class="f-wide" placeholder="Description (optional)" />
+                <input id="na-bucks" class="f-sm" type="number" placeholder="Bucks" min="1" value="5" />
+                <div class="toggle-row" style="width:100%">
+                  <span class="toggle-label">Repeatable (can do multiple times/day)</span>
+                  <button class="toggle" id="na-repeat" data-on="false"></button>
+                </div>
+                <button class="add-btn" id="add-act-btn">Add Activity</button>
+              </div>
             </div>
-            <div class="edit-form-actions">
-              <button class="cancel-edit-btn" id="cancel-edit-act">Cancel</button>
-              <button class="save-edit-btn" id="save-edit-act" data-id="${
 
-
-            a.id}">Save Changes</button>
+            <div class="admin-section">
+              <h3>Rewards / Shop Items</h3>
+              ${S.rewards.map(r => {const isEditing = editingId === r.id && editingType === 'reward';return `
+                    <div class="admin-row" style="flex-direction:column;align-items:flex-start;gap:2px;">
+                      <div style="display:flex;align-items:center;gap:8px;width:100%">
+                        <span class="admin-row-emoji">${r.emoji}</span>
+                        <span class="admin-row-name">${r.name}</span>
+                        <span class="admin-row-meta">${r.bucks} 💵</span>
+                        <button class="edit-btn" data-edit-rew="${r.id}" title="Edit">✎</button>
+                        <button class="del-btn" data-del-rew="${r.id}">×</button>
+                      </div>
+                      ${isEditing ? `
+                      <div class="edit-form">
+                        <div class="edit-form-row">
+                          <input id="er-emoji" class="ef-emoji" value="${r.emoji}" maxlength="2" />
+                          <input id="er-name" class="ef-wide" value="${r.name}" placeholder="Reward name" />
+                          <input id="er-bucks" class="ef-sm" type="number" value="${r.bucks}" min="1" />
+                        </div>
+                        <div class="edit-form-actions">
+                          <button class="cancel-edit-btn" id="cancel-edit-rew">Cancel</button>
+                          <button class="save-edit-btn" id="save-edit-rew" data-id="${r.id}">Save Changes</button>
+                        </div>
+                      </div>` : ''}
+                    </div>`;}).join('')}
+              <div class="add-form">
+                <input id="nr-emoji" class="f-emoji" placeholder="🎁" maxlength="2" />
+                <input id="nr-name" class="f-wide" placeholder="Reward name" />
+                <input id="nr-bucks" class="f-sm" type="number" placeholder="Bucks" min="1" value="10" />
+                <button class="add-btn" id="add-rew-btn">Add Reward</button>
+              </div>
             </div>
-          </div>`
-            : ''}
-        </div>`;}).join('')}
-      <div class="add-form">
-        <input id="na-emoji" class="f-emoji" placeholder="⭐" maxlength="2" />
-        <input id="na-name" class="f-wide" placeholder="Activity name" />
-        <input id="na-desc" class="f-wide" placeholder="Description (optional)" />
-        <input id="na-bucks" class="f-sm" type="number" placeholder="Bucks" min="1" value="5" />
-        <div class="toggle-row" style="width:100%">
-          <span class="toggle-label">Repeatable (can do multiple times/day)</span>
-          <button class="toggle" id="na-repeat" data-on="false"></button>
-        </div>
-        <button class="add-btn" id="add-act-btn">Add Activity</button>
-      </div>
-    </div>
 
-    <div class="admin-section">
-      <h3>Rewards / Shop Items</h3>
-      ${
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        S.rewards.map(r => {const isEditing = editingId === r.id && editingType === 'reward';return `
-        <div class="admin-row" style="flex-direction:column;align-items:flex-start;gap:2px;">
-          <div style="display:flex;align-items:center;gap:8px;width:100%">
-            <span class="admin-row-emoji">${
-
-            r.emoji}</span>
-            <span class="admin-row-name">${r.name}</span>
-            <span class="admin-row-meta">${r.bucks} 💵</span>
-            <button class="edit-btn" data-edit-rew="${r.id}" title="Edit">✎</button>
-            <button class="del-btn" data-del-rew="${r.id}">×</button>
-          </div>
-          ${
-            isEditing ? `
-          <div class="edit-form">
-            <div class="edit-form-row">
-              <input id="er-emoji" class="ef-emoji" value="${
-
-            r.emoji}" maxlength="2" />
-              <input id="er-name" class="ef-wide" value="${r.name}" placeholder="Reward name" />
-              <input id="er-bucks" class="ef-sm" type="number" value="${r.bucks}" min="1" />
+            <div class="admin-section">
+              <h3>Group Rewards</h3>
+              <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">All three kids must contribute to unlock these. Set the amount each kid contributes.</p>
+              ${(S.groupRewards || []).map(gr => {const isEditing = editingId === gr.id && editingType === 'group';const contribs = gr.contributions || [false, false, false];return `
+                    <div class="admin-row" style="flex-direction:column;align-items:flex-start;gap:2px;">
+                      <div style="display:flex;align-items:center;gap:8px;width:100%">
+                        <span class="admin-row-emoji">${gr.emoji}</span>
+                        <span class="admin-row-name">${gr.name}</span>
+                        <span class="admin-row-meta">${gr.bucks} 💵 each</span>
+                        <button class="edit-btn" data-edit-grp="${gr.id}" title="Edit">✎</button>
+                        <button class="del-btn" data-del-grp="${gr.id}">×</button>
+                      </div>
+                      <div style="display:flex;gap:4px;margin-top:4px;">
+                        ${S.kids.map((k, i) => `<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:${contribs[i] ? 'var(--k' + i + '-mid)' : 'var(--card2)'};color:${contribs[i] ? 'white' : 'var(--muted)'};">${k}</span>`).join('')}
+                      </div>
+                      ${isEditing ? `
+                      <div class="edit-form">
+                        <div class="edit-form-row">
+                          <input id="egr-emoji" class="ef-emoji" value="${gr.emoji}" maxlength="2" />
+                          <input id="egr-name" class="ef-wide" value="${gr.name}" placeholder="Reward name" />
+                          <input id="egr-bucks" class="ef-sm" type="number" value="${gr.bucks}" min="1" />
+                        </div>
+                        <div class="edit-form-actions">
+                          <button class="cancel-edit-btn" id="cancel-edit-grp">Cancel</button>
+                          <button class="save-edit-btn" id="save-edit-grp" data-id="${gr.id}">Save Changes</button>
+                        </div>
+                      </div>` : ''}
+                    </div>`;}).join('')}
+              <div class="add-form">
+                <input id="ngr-emoji" class="f-emoji" placeholder="🍔" maxlength="2" />
+                <input id="ngr-name" class="f-wide" placeholder="Group reward name" />
+                <input id="ngr-bucks" class="f-sm" type="number" placeholder="Each" min="1" value="20" />
+                <button class="add-btn" id="add-grp-btn">Add</button>
+              </div>
+              ${(S.groupRewards || []).some(g => (g.contributions || []).some(c => c)) ? `<button class="danger-btn" id="reset-group-contrib" style="margin-top:8px">↺ Reset Group Reward Contributions</button>` : ''}
             </div>
-            <div class="edit-form-actions">
-              <button class="cancel-edit-btn" id="cancel-edit-rew">Cancel</button>
-              <button class="save-edit-btn" id="save-edit-rew" data-id="${
 
-
-            r.id}">Save Changes</button>
+            <div class="admin-section">
+              <h3>Buck Balances</h3>
+              <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">Edit a kid's balance directly, then hit Save.</p>
+              ${S.kids.map((k, i) => `
+                <div class="admin-row" style="gap:10px;">
+                  <span class="admin-row-emoji">💵</span>
+                  <span class="admin-row-name">${k}</span>
+                  <input id="bal-input-${i}" type="number" min="0" value="${S.balances[i]}"
+                    style="width:72px;border:1px solid var(--border2);border-radius:5px;padding:5px 8px;font-family:'Inter',sans-serif;font-size:13px;background:var(--bg);color:var(--text);" />
+                  <button class="save-btn" data-save-bal="${i}" style="padding:5px 12px;">Save</button>
+                </div>`).join('')}
             </div>
-          </div>`
-            : ''}
-        </div>`;}).join('')}
-      <div class="add-form">
-        <input id="nr-emoji" class="f-emoji" placeholder="🎁" maxlength="2" />
-        <input id="nr-name" class="f-wide" placeholder="Reward name" />
-        <input id="nr-bucks" class="f-sm" type="number" placeholder="Bucks" min="1" value="10" />
-        <button class="add-btn" id="add-rew-btn">Add Reward</button>
-      </div>
-    </div>
 
-    <div class="admin-section">
-      <h3>Group Rewards</h3>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">All three kids must contribute to unlock these. Set the amount each kid contributes.</p>
-      ${
-
-
-
-
-
-
-
-
-
-
-        (S.groupRewards || []).map(gr => {const isEditing = editingId === gr.id && editingType === 'group';const contribs = gr.contributions || [false, false, false];return `
-        <div class="admin-row" style="flex-direction:column;align-items:flex-start;gap:2px;">
-          <div style="display:flex;align-items:center;gap:8px;width:100%">
-            <span class="admin-row-emoji">${
-
-            gr.emoji}</span>
-            <span class="admin-row-name">${gr.name}</span>
-            <span class="admin-row-meta">${gr.bucks} 💵 each</span>
-            <button class="edit-btn" data-edit-grp="${gr.id}" title="Edit">✎</button>
-            <button class="del-btn" data-del-grp="${gr.id}">×</button>
-          </div>
-          <div style="display:flex;gap:4px;margin-top:4px;">
-            ${
-
-            S.kids.map((k, i) => `<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:${contribs[i] ? 'var(--k' + i + '-mid)' : 'var(--card2)'};color:${contribs[i] ? 'white' : 'var(--muted)'};">${k}</span>`).join('')}
-          </div>
-          ${
-            isEditing ? `
-          <div class="edit-form">
-            <div class="edit-form-row">
-              <input id="egr-emoji" class="ef-emoji" value="${
-
-            gr.emoji}" maxlength="2" />
-              <input id="egr-name" class="ef-wide" value="${gr.name}" placeholder="Reward name" />
-              <input id="egr-bucks" class="ef-sm" type="number" value="${gr.bucks}" min="1" />
-            </div>
-            <div class="edit-form-actions">
-              <button class="cancel-edit-btn" id="cancel-edit-grp">Cancel</button>
-              <button class="save-edit-btn" id="save-edit-grp" data-id="${
-
-
-            gr.id}">Save Changes</button>
-            </div>
-          </div>`
-            : ''}
-        </div>`;}).join('')}
-      <div class="add-form">
-        <input id="ngr-emoji" class="f-emoji" placeholder="🍔" maxlength="2" />
-        <input id="ngr-name" class="f-wide" placeholder="Group reward name" />
-        <input id="ngr-bucks" class="f-sm" type="number" placeholder="Each" min="1" value="20" />
-        <button class="add-btn" id="add-grp-btn">Add</button>
-      </div>
-      ${
-
-
-
-
-
-        (S.groupRewards || []).some(g => (g.contributions || []).some(c => c)) ? `<button class="danger-btn" id="reset-group-contrib" style="margin-top:8px">↺ Reset Group Reward Contributions</button>` : ''}
-    </div>
-
-    <div class="admin-section">
-      <h3>Buck Balances</h3>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">Edit a kid's balance directly, then hit Save.</p>
-      ${
-
-
-
-
-        S.kids.map((k, i) => `
-        <div class="admin-row" style="gap:10px;">
-          <span class="admin-row-emoji">💵</span>
-          <span class="admin-row-name">${
-
-        k}</span>
-          <input id="bal-input-${i}" type="number" min="0" value="${S.balances[i]}"
-            style="width:72px;border:1px solid var(--border2);border-radius:5px;padding:5px 8px;font-family:'Inter',sans-serif;font-size:13px;background:var(--bg);color:var(--text);" />
-          <button class="save-btn" data-save-bal="${
-        i}" style="padding:5px 12px;">Save</button>
-        </div>`).join('')}
-    </div>
-
-    <div class="admin-section">
-      <h3>Resets</h3>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5">Each button resets that data for all kids. Activity counts also reset automatically every night.</p>
-      <button class="danger-btn" id="reset-activities">↺ Reset Today's Activity Counts</button>
-      <button class="danger-btn" id="reset-bucks" style="margin-top:8px">↺ Reset All Buck Balances to Zero</button>
-      <button class="danger-btn" id="reset-history" style="margin-top:8px">↺ Reset Redemption History</button>
-    </div>`
-
-
-
-
-
-
-
-
-        ;
+            <div class="admin-section">
+              <h3>Resets</h3>
+              <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5">Each button resets that data for all kids. Activity counts also reset automatically every night.</p>
+              <button class="danger-btn" id="reset-activities">↺ Reset Today's Activity Counts</button>
+              <button class="danger-btn" id="reset-bucks" style="margin-top:8px">↺ Reset All Buck Balances to Zero</button>
+              <button class="danger-btn" id="reset-history" style="margin-top:8px">↺ Reset Redemption History</button>
+            </div>`;
 
         app.innerHTML = html;
 
@@ -2515,33 +2455,21 @@
 
     function renderPinPad(errorMsg) {
         pinOverlay.innerHTML = `
-    <div class="pin-box">
-      <div class="pin-title">Parent Access</div>
-      <div class="pin-sub">Enter your PIN to continue</div>
-      <div class="pin-dots">
-        ${
-
-
-
-        [0, 1, 2, 3].map(i => `<div class="pin-dot${pinEntry.length > i ? (errorMsg ? ' error' : ' filled') : ''}"></div>`).join('')}
-      </div>
-      <div class="pin-error-msg">${
-        errorMsg || ''}</div>
-      <div class="pin-grid">
-        ${
-        [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button class="pin-key" data-digit="${n}">${n}</button>`).join('')}
-        <div></div>
-        <button class="pin-key" data-digit="0">0</button>
-        <button class="pin-key del" data-del>⌫</button>
-      </div>
-      <button class="pin-cancel" id="pin-cancel-btn">Cancel</button>
-    </div>`
-
-
-
-
-
-        ;
+            <div class="pin-box">
+              <div class="pin-title">Parent Access</div>
+              <div class="pin-sub">Enter your PIN to continue</div>
+              <div class="pin-dots">
+                ${[0, 1, 2, 3].map(i => `<div class="pin-dot${pinEntry.length > i ? (errorMsg ? ' error' : ' filled') : ''}"></div>`).join('')}
+              </div>
+              <div class="pin-error-msg">${errorMsg || ''}</div>
+              <div class="pin-grid">
+                ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button class="pin-key" data-digit="${n}">${n}</button>`).join('')}
+                <div></div>
+                <button class="pin-key" data-digit="0">0</button>
+                <button class="pin-key del" data-del>⌫</button>
+              </div>
+              <button class="pin-cancel" id="pin-cancel-btn">Cancel</button>
+            </div>`;
 
         pinOverlay.querySelectorAll('[data-digit]').forEach(btn => {
             btn.onclick = () => {
